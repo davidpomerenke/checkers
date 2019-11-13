@@ -1,6 +1,5 @@
 import React from 'react'
 import './App.css'
-import './checkers'
 import { checkers } from './checkers'
 
 class Tile extends React.Component {
@@ -51,7 +50,14 @@ const checkerStyle = (y, x) => ({
 class Checker extends React.Component {
   render () {
     return (
-      <div className='checker' style={checkerStyle(this.props.y, this.props.x)} />
+      <div
+        className={
+          this.props.player === 'p'
+            ? 'checker-dark'
+            : 'checker-light'
+        }
+        style={checkerStyle(this.props.y, this.props.x)}
+      />
     )
   }
 }
@@ -59,7 +65,7 @@ class Checker extends React.Component {
 class Checkers extends React.Component {
   render () {
     return checkers.initialState[this.props.player].map(([y, x]) =>
-      <Checker y={y} x={x} key={y + ',' + x} />
+      <Checker player={this.props.player} y={y} x={x} key={y + ',' + x} />
     )
   }
 }
