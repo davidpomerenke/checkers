@@ -1,81 +1,15 @@
 import React from 'react'
 import './App.css'
 import { checkers } from './checkers'
-
-class Tile extends React.Component {
-  colour (y, x) {
-    return (y + x) % 2 === 0 ? 'light-tile' : 'dark-tile'
-  }
-
-  render () {
-    return (
-      <div className={this.colour(this.props.y, this.props.x)} />
-    )
-  }
-}
-
-class Row extends React.Component {
-  render () {
-    return (
-      <div className='row'>
-        {
-          [0, 1, 2, 3, 4, 5, 6, 7].map(x =>
-            <Tile x={x} y={this.props.y} state={this.props.state} key={x.toString()} />
-          )
-        }
-      </div>
-    )
-  }
-}
-
-class Board extends React.Component {
-  render () {
-    return (
-      <div className='board'>
-        {
-          [0, 1, 2, 3, 4, 5, 6, 7].map(y =>
-            <Row y={y} state={this.props.state} key={y.toString()} />
-          )
-        }
-      </div>
-    )
-  }
-}
-
-const checkerStyle = (y, x) => ({
-  top: 'calc(50vh - 50vmin + 1.25vmin + ' + 12.5 * (7 - y) + 'vmin)',
-  left: 'calc(50vw - 50vmin + 1.25vmin + ' + 12.5 * x + 'vmin)'
-})
-
-class Checker extends React.Component {
-  render () {
-    return (
-      <div
-        className={
-          this.props.player === 'p'
-            ? 'checker-dark'
-            : 'checker-light'
-        }
-        style={checkerStyle(this.props.y, this.props.x)}
-      />
-    )
-  }
-}
-
-class Checkers extends React.Component {
-  render () {
-    return checkers.initialState[this.props.player].map(([y, x]) =>
-      <Checker player={this.props.player} y={y} x={x} key={y + ',' + x} />
-    )
-  }
-}
+import Board from './Components/Board'
+import Player from './Components/Player'
 
 function App () {
   return (
     <div className='app'>
-      <Board state='' />
-      <Checkers player='p' />
-      <Checkers player='q' />
+      <Board />
+      <Player player='p' state={checkers.initialState} />
+      <Player player='q' state={checkers.initialState} />
     </div>
   )
 }
