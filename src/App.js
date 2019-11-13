@@ -4,6 +4,8 @@ import { checkers } from './checkers'
 import Board from './Components/Board'
 import Player from './Components/Player'
 
+console.log(checkers.actions(checkers.initialState))
+
 function App () {
   return (
     <div className='app'>
