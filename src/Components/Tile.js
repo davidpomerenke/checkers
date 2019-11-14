@@ -14,6 +14,9 @@ export default class Tile extends React.Component {
       <div
         ref={[this.props.y, this.props.x].join('-')}
         className={this.colour(this.props.highlighted)}
+        onClick={e => {
+          if (this.props.highlighted) this.props.parentCallback()
+        }}
       />
     )
   }

@@ -15,6 +15,12 @@ export default class Row extends React.Component {
               y={this.props.y}
               x={x}
               state={this.props.state}
+              parentCallback={
+                () => this.props.parentCallback(
+                  this.props.highlights
+                    .find(([, , [yy, xx]]) =>
+                      yy === this.props.y && xx === x))
+              }
               key={x.toString()}
             />
           )

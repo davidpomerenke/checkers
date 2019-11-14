@@ -7,19 +7,29 @@ import Player from './Components/Player'
 class App extends React.Component {
   constructor () {
     super()
-    this.state = { highlights: [] }
+    this.state = {
+      state: checkers.initialState,
+      highlights: []
+    }
   }
 
   render () {
     return (
       <div className='app'>
-        <Board highlights={this.state.highlights} />
+        <Board
+          highlights={this.state.highlights}
+          parentCallback={action =>
+            this.setState({
+              state: checkers.result(this.state.state, action),
+              highlights: []
+            })}
+        />
         {
           ['p', 'q'].map(p =>
             <Player
               key={p}
               player={p}
-              state={checkers.initialState}
+              state={this.state.state}
               parentCallback={
                 highlights =>
                   this.setState({ highlights: highlights })

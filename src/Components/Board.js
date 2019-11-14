@@ -12,6 +12,7 @@ export default class Board extends React.Component {
               highlights={this.props.highlights}
               state={this.props.state}
               key={y.toString()}
+              parentCallback={this.props.parentCallback}
             />
           )
         }

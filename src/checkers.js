@@ -26,7 +26,15 @@ export const checkers = new Game({
     ...royal ? [...jump(state, [y, x], -1, +1)] : [],
     ...royal ? [...jump(state, [y, x], -1, +1)] : []
   ]),
-  result: (state, action) => 'todo',
+  result: (state, [, startPoint, endPoint]) => ({
+    [state.player]: [
+      ...state[state.player].filter(a => !eq(a, startPoint)),
+      endPoint
+    ],
+    [state.opponent]: state[state.opponent],
+    player: state.opponent,
+    opponent: state.player
+  }),
   terminalTest: state =>
     state.p.length === 0 ||
     state.q.length === 0 ||
@@ -43,12 +51,14 @@ const move = (state, startPoint, forward, sideward) =>
 
 const jump = (state, [y, x], forward, sideward) => []
 
-const endPoint = (state, [y, x], forward, sideward) =>
-  [y + forward * direction(state), x + sideward]
+const endPoint = (state, [y, x, royal], forward, sideward) =>
+  [y + forward * direction(state), x + sideward, royal]
 
 const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
 
-const occupied = (state, [y, x]) =>
-  ['p', 'q'].some(p => state[p].some(([yy, xx]) => yy === y && xx === x))
+const occupied = (state, a) =>
+  ['p', 'q'].some(p => state[p].some(b => eq(a, b)))
+
+const eq = ([y, x], [yy, xx]) => y === yy && x === xx
 
 const direction = state => state.player === 'p' ? +1 : -1
