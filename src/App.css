@@ -22,6 +22,10 @@ body {
   box-shadow: inset 0px 0px 80px black;
 }
 
+.dark-tile-active {
+  background-color: yellow;
+}
+
 .row {
   display: flex;
   flex-direction: row;

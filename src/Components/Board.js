@@ -6,8 +6,13 @@ export default class Board extends React.Component {
     return (
       <div className='board'>
         {
-          [0, 1, 2, 3, 4, 5, 6, 7].map(y =>
-            <Row y={y} state={this.props.state} key={y.toString()} />
+          [7, 6, 5, 4, 3, 2, 1, 0].map(y =>
+            <Row
+              y={y}
+              highlights={this.props.highlights}
+              state={this.props.state}
+              key={y.toString()}
+            />
           )
         }
       </div>

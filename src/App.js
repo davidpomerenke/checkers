@@ -4,16 +4,32 @@ import { checkers } from './checkers'
 import Board from './Components/Board'
 import Player from './Components/Player'
 
-console.log(checkers.actions(checkers.initialState))
+class App extends React.Component {
+  constructor () {
+    super()
+    this.state = { highlights: [] }
+  }
 
-function App () {
-  return (
-    <div className='app'>
-      <Board />
-      <Player player='p' state={checkers.initialState} />
-      <Player player='q' state={checkers.initialState} />
-    </div>
-  )
+  render () {
+    return (
+      <div className='app'>
+        <Board highlights={this.state.highlights} />
+        {
+          ['p', 'q'].map(p =>
+            <Player
+              key={p}
+              player={p}
+              state={checkers.initialState}
+              parentCallback={
+                highlights =>
+                  this.setState({ highlights: highlights })
+              }
+            />
+          )
+        }
+      </div>
+    )
+  }
 }
 
 export default App

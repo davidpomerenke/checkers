@@ -36,6 +36,7 @@ export const checkers = new Game({
 })
 
 const move = (state, startPoint, forward, sideward) =>
+  onBoard(endPoint(state, startPoint, forward, sideward)) &&
   !occupied(state, endPoint(state, startPoint, forward, sideward))
     ? [['move', startPoint, endPoint(state, startPoint, forward, sideward)]]
     : []
@@ -45,7 +46,9 @@ const jump = (state, [y, x], forward, sideward) => []
 const endPoint = (state, [y, x], forward, sideward) =>
   [y + forward * direction(state), x + sideward]
 
+const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
+
 const occupied = (state, [y, x]) =>
-  !['p', 'q'].some(p => state[p].some(([yy, xx]) => yy === y && xx === x))
+  ['p', 'q'].some(p => state[p].some(([yy, xx]) => yy === y && xx === x))
 
 const direction = state => state.player === 'p' ? +1 : -1
