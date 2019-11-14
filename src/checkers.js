@@ -26,12 +26,15 @@ export const checkers = new Game({
     ...royal ? [...jump(state, [y, x], -1, +1)] : [],
     ...royal ? [...jump(state, [y, x], -1, +1)] : []
   ]),
-  result: (state, [, startPoint, endPoint]) => ({
+  result: (state, [moveType, startPoint, endPoint]) => ({
     [state.player]: [
-      ...state[state.player].filter(a => !eq(a, startPoint)),
+      ...state[state.player].filter(pos => !eq(pos, startPoint)),
       endPoint
     ],
-    [state.opponent]: state[state.opponent],
+    [state.opponent]: state[state.opponent].filter(pos =>
+      moveType !== 'jump' ||
+      !eq(pos, intermediate(startPoint, endPoint))
+    ),
     player: state.opponent,
     opponent: state.player
   }),
@@ -45,20 +48,30 @@ export const checkers = new Game({
 
 const move = (state, startPoint, forward, sideward) =>
   onBoard(endPoint(state, startPoint, forward, sideward)) &&
-  !occupied(state, endPoint(state, startPoint, forward, sideward))
+    !occupied(state, endPoint(state, startPoint, forward, sideward))
     ? [['move', startPoint, endPoint(state, startPoint, forward, sideward)]]
     : []
 
-const jump = (state, [y, x], forward, sideward) => []
+const jump = (state, startPoint, forward, sideward) =>
+  onBoard(endPoint(state, startPoint, forward, sideward, 2)) &&
+    !occupied(state, endPoint(state, startPoint, forward, sideward, 2)) &&
+    occupiedBy(state, endPoint(state, startPoint, forward, sideward), state.opponent)
+    ? [['jump', startPoint, endPoint(state, startPoint, forward, sideward, 2)]]
+    : []
 
-const endPoint = (state, [y, x, royal], forward, sideward) =>
-  [y + forward * direction(state), x + sideward, royal]
+const endPoint = (state, [y, x, royal], forward, sideward, steps = 1) =>
+  [y + forward * direction(state) * steps, x + sideward * steps, royal]
 
 const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
 
-const occupied = (state, a) =>
-  ['p', 'q'].some(p => state[p].some(b => eq(a, b)))
+const occupiedBy = (state, posA, player) =>
+  state[player].some(posB => eq(posA, posB))
 
-const eq = ([y, x], [yy, xx]) => y === yy && x === xx
+const occupied = (state, pos) =>
+  ['p', 'q'].some(p => occupiedBy(state, pos, p))
+
+const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
 const direction = state => state.player === 'p' ? +1 : -1
+
+const intermediate = ([y1, x1], [y2, x2]) => [(y1 + y2) / 2, (x1 + x2) / 2]
