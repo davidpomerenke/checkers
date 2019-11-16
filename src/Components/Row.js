@@ -7,19 +7,15 @@ export default class Row extends React.Component {
       <div className='row'>
         {
           [0, 1, 2, 3, 4, 5, 6, 7].map(x =>
-            <Tile
+            <Square
               highlighted={
-                this.props.highlights.some(([, , [yy, xx]]) =>
-                  yy === this.props.y && xx === x)
+                this.props.highlights.some(([y2, x2]) => y2 === this.props.y && x2 === x)
               }
               y={this.props.y}
               x={x}
               state={this.props.state}
               parentCallback={
-                () => this.props.parentCallback(
-                  this.props.highlights
-                    .find(([, , [yy, xx]]) =>
-                      yy === this.props.y && xx === x))
+                () => this.props.parentCallback(this.props.y, x)
               }
               key={x.toString()}
             />

@@ -1,5 +1,4 @@
 import React from 'react'
-import { checkers } from '../checkers'
 
 const checkerStyle = (y, x) => ({
   top: 'calc(50vh - 50vmin + 1.25vmin + ' + 12.5 * (7 - y) + 'vmin)',
@@ -11,13 +10,7 @@ export default class Checker extends React.Component {
     return (
       <div
         onClick={e => {
-          this.props.parentCallback(
-            checkers.actions(this.props.state)
-              .filter(([, [y, x]]) =>
-                y === this.props.y &&
-                x === this.props.x
-              )
-          )
+          this.props.parentCallback()
         }}
         ref={[this.props.state.player, this.props.y, this.props.x].join('-')}
         className={

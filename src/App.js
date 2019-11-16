@@ -9,34 +9,46 @@ class App extends React.Component {
     super()
     this.state = {
       state: checkers.initialState,
+      clickedChecker: [],
       highlights: []
     }
   }
 
   render () {
+    const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
+
     return (
       <div className='app'>
         <Board
           highlights={this.state.highlights}
-          parentCallback={action =>
+          parentCallback={(y, x) =>
             this.setState({
-              state: checkers.result(this.state.state, action),
+              state: checkers.result(this.state.state, checkers.actions(this.state.state).filter(action =>
+                eq(action[0], this.state.clickedChecker) &&
+                eq(action[action.length - 1], [y, x])
+              )[0]),
+              /**
+               * TODO:
+               * when there are several paths to one square,
+               * let the user choose, somehow
+               */
               highlights: []
             })}
         />
-        {
-          ['p', 'q'].map(p =>
-            <CheckersGroup
-              key={p}
-              player={p}
-              state={this.state.state}
-              parentCallback={
-                highlights =>
-                  this.setState({ highlights: highlights })
-              }
-            />
-          )
-        }
+        {['p', 'q'].map(p =>
+          <CheckersGroup
+            key={p}
+            player={p}
+            state={this.state.state}
+            parentCallback={(y, x) => {
+              this.setState({
+                clickedChecker: [y, x],
+                highlights: checkers.actions(this.state.state).filter(action =>
+                  eq(action[0], [y, x])).map(action => action[action.length - 1])
+              })
+            }}
+          />
+        )}
       </div>
     )
   }

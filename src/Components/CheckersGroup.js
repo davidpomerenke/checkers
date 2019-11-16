@@ -7,7 +7,7 @@ export default class CheckersGroup extends React.Component {
       <Checker
         state={this.props.state}
         player={this.props.player}
-        parentCallback={highlights => this.props.parentCallback(highlights)}
+        parentCallback={() => this.props.parentCallback(y, x)}
         y={y}
         x={x}
         key={y + ',' + x}

@@ -16,28 +16,13 @@ export const checkers = new Game({
     opponent: 'q'
   },
   player: state => state.player,
-  actions: state => state[state.player].flatMap(([y, x, royal]) => [
-    ...move(state, [y, x], +1, +1),
-    ...move(state, [y, x], +1, -1),
-    ...jump(state, [y, x], +1, +1),
-    ...jump(state, [y, x], +1, -1),
-    ...royal ? [...move(state, [y, x], -1, +1)] : [],
-    ...royal ? [...move(state, [y, x], -1, -1)] : [],
-    ...royal ? [...jump(state, [y, x], -1, +1)] : [],
-    ...royal ? [...jump(state, [y, x], -1, +1)] : []
-  ]),
-  result: (state, [moveType, startPoint, endPoint]) => ({
-    [state.player]: [
-      ...state[state.player].filter(pos => !eq(pos, startPoint)),
-      endPoint
-    ],
-    [state.opponent]: state[state.opponent].filter(pos =>
-      moveType !== 'jump' ||
-      !eq(pos, intermediate(startPoint, endPoint))
-    ),
-    player: state.opponent,
-    opponent: state.player
-  }),
+  actions: state => state[state.player].flatMap(([y, x, royal]) =>
+    directions(royal).flatMap(direction => [
+      ...move(state, [y, x, royal], direction),
+      ...jump(state, [y, x, royal], direction)
+    ]
+    )),
+  result: (state, action) => recursiveResult(state, action, true),
   terminalTest: state =>
     state.p.length === 0 ||
     state.q.length === 0 ||
@@ -46,32 +31,69 @@ export const checkers = new Game({
   heuristic: state => state.p.length - state.q.length
 })
 
-const move = (state, startPoint, forward, sideward) =>
-  onBoard(endPoint(state, startPoint, forward, sideward)) &&
-    !occupied(state, endPoint(state, startPoint, forward, sideward))
-    ? [['move', startPoint, endPoint(state, startPoint, forward, sideward)]]
+const move = (state, startPoint, direction) =>
+  onBoard(endPoint(state, startPoint, direction)) &&
+    !occupied(state, endPoint(state, startPoint, direction))
+    ? [[startPoint, endPoint(state, startPoint, direction)]]
     : []
 
-const jump = (state, startPoint, forward, sideward) =>
-  onBoard(endPoint(state, startPoint, forward, sideward, 2)) &&
-    !occupied(state, endPoint(state, startPoint, forward, sideward, 2)) &&
-    occupiedBy(state, endPoint(state, startPoint, forward, sideward), state.opponent)
-    ? [['jump', startPoint, endPoint(state, startPoint, forward, sideward, 2)]]
+const jump = (state, [y, x, royal], direction, prev = []) =>
+  onBoard(endPoint(state, [y, x], direction, 2)) &&
+    !occupied(state, endPoint(state, [y, x], direction, 2)) &&
+    occupiedBy(state, endPoint(state, [y, x], direction), state.opponent)
+    ? [
+      [...prev, [y, x, royal], endPoint(state, [y, x, royal], direction, 2)],
+      ...directions(royal).flatMap(direction2 =>
+        jump(
+          prev.length === 1 ? state : checkers._result(state, prev),
+          endPoint(state, [y, x, royal], direction, 2),
+          direction2,
+          [...prev, [y, x, royal]]
+        )
+      )
+    ]
     : []
 
-const endPoint = (state, [y, x, royal], forward, sideward, steps = 1) =>
-  [y + forward * direction(state) * steps, x + sideward * steps, royal]
+const endPoint = (state, [y, x, royal], [forward, sideward], steps = 1) =>
+  [y + forward * playerDirection(state) * steps, x + sideward * steps, royal]
 
 const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
-
-const occupiedBy = (state, posA, player) =>
-  state[player].some(posB => eq(posA, posB))
 
 const occupied = (state, pos) =>
   ['p', 'q'].some(p => occupiedBy(state, pos, p))
 
+const occupiedBy = (state, posA, player) =>
+  state[player].some(posB => eq(posA, posB))
+
+const playerDirection = state => state.player === 'p' ? +1 : -1
+
 const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
-const direction = state => state.player === 'p' ? +1 : -1
+const directions = royal => [[+1, -1], [+1, +1], ...royal ? [[-1, -1], [-1, +1]] : []]
+
+const recursiveResult = (state, action, nextPlayer = false) =>
+  action.length >= 2
+    ? stepResult(
+      recursiveResult(state, action.slice(0, action.length - 1)),
+      action[action.length - 2],
+      action[action.length - 1],
+      nextPlayer
+    )
+    : state
+
+const stepResult = (state, startPoint, endPoint, nextPlayer) => ({
+  [state.player]: [
+    ...state[state.player].filter(pos => !eq(pos, startPoint)),
+    endPoint
+  ],
+  [state.opponent]: state[state.opponent].filter(pos =>
+    dist(startPoint, endPoint) === 1 ||
+    !eq(pos, intermediate(startPoint, endPoint))
+  ),
+  player: nextPlayer ? state.opponent : state.player,
+  opponent: nextPlayer ? state.player : state.opponent
+})
+
+const dist = ([y1, x1], [y2, x2]) => Math.abs(y2 - y1) / 2 + Math.abs(x2 - x1) / 2
 
 const intermediate = ([y1, x1], [y2, x2]) => [(y1 + y2) / 2, (x1 + x2) / 2]
