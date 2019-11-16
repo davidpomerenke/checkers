@@ -20,8 +20,11 @@ export const checkers = new Game({
     directions(royal).flatMap(direction => [
       ...move(state, [y, x, royal], direction),
       ...jump(state, [y, x, royal], direction)
-    ]
-    )),
+    ]))
+    .filter((action, _, actions) =>
+      !actions.some(action => dist(action[0], action[1]) / 2 === 2) ||
+      dist(action[0], action[1]) / 2 === 2
+    ),
   result: (state, action) => recursiveResult(state, action, true),
   terminalTest: state =>
     state.p.length === 0 ||
@@ -87,13 +90,13 @@ const stepResult = (state, startPoint, endPoint, nextPlayer) => ({
     endPoint
   ],
   [state.opponent]: state[state.opponent].filter(pos =>
-    dist(startPoint, endPoint) === 1 ||
+    dist(startPoint, endPoint) / 2 === 1 ||
     !eq(pos, intermediate(startPoint, endPoint))
   ),
   player: nextPlayer ? state.opponent : state.player,
   opponent: nextPlayer ? state.player : state.opponent
 })
 
-const dist = ([y1, x1], [y2, x2]) => Math.abs(y2 - y1) / 2 + Math.abs(x2 - x1) / 2
+const dist = ([y1, x1], [y2, x2]) => Math.abs(y2 - y1) + Math.abs(x2 - x1)
 
 const intermediate = ([y1, x1], [y2, x2]) => [(y1 + y2) / 2, (x1 + x2) / 2]
