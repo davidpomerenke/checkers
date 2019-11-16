@@ -1,7 +1,7 @@
 import React from 'react'
 import Checker from './Checker'
 
-export default class Player extends React.Component {
+export default class CheckersGroup extends React.Component {
   render () {
     return this.props.state[this.props.player].map(([y, x]) =>
       <Checker

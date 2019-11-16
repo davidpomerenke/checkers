@@ -1,5 +1,5 @@
 import React from 'react'
-import Tile from './Tile'
+import Square from './Square'
 
 export default class Row extends React.Component {
   render () {

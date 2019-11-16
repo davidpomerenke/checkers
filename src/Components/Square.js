@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default class Tile extends React.Component {
+export default class Square extends React.Component {
   colour (highlighted) {
     return (this.props.y + this.props.x) % 2 === 1
       ? 'light-tile'

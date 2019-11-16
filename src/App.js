@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import { checkers } from './checkers'
 import Board from './Components/Board'
-import Player from './Components/Player'
+import CheckersGroup from './Components/CheckersGroup'
 
 class App extends React.Component {
   constructor () {
@@ -26,7 +26,7 @@ class App extends React.Component {
         />
         {
           ['p', 'q'].map(p =>
-            <Player
+            <CheckersGroup
               key={p}
               player={p}
               state={this.state.state}
