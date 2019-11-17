@@ -6,7 +6,7 @@ import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
 
 class App extends React.Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       state: checkers.initialState,
@@ -92,11 +92,24 @@ class App extends React.Component {
               pieces={this.state.state[p]}
               clickedChecker={this.state.clickedChecker}
               parentCallback={(y, x) => {
-                this.setState({
-                  clickedChecker: [y, x],
-                  highlights: checkers.actions(this.state.state).filter(action =>
-                    eq(action[0], [y, x])).map(action => action[action.length - 1])
-                })
+                if (p === this.state.state.player) {
+                  if (checkers.actions(this.state.state).some(action => eq(action[0], [y, x]))) {
+                    this.setState({
+                      clickedChecker: [y, x],
+                      message: '',
+                      highlights: checkers.actions(this.state.state).filter(action =>
+                        eq(action[0], [y, x])).map(action => action[action.length - 1])
+                    })
+                  } else {
+                    this.setState({
+                      message: 'For some reason, you cannot move this piece.' // TODO:
+                    })
+                  }
+                } else {
+                  this.setState({
+                    message: (p === 'p' ? 'Brown ' : 'Beige ') + ' is next.'
+                  })
+                }
               }}
             />
           )
