@@ -16,7 +16,7 @@ class App extends React.Component {
   }
 
   render () {
-    if (checkers.terminalTest(this.state.state)) {
+    if (checkers.terminalTest(this.state.state) && !this.state.finished) {
       this.setState({ finished: true })
     }
 
@@ -56,7 +56,7 @@ class App extends React.Component {
           <CheckersGroup
             key={p}
             player={p}
-            state={this.state.state}
+            pieces={this.state.state[p]}
             parentCallback={(y, x) => {
               this.setState({
                 clickedChecker: [y, x],
@@ -67,19 +67,17 @@ class App extends React.Component {
           />
         )}
         {
-          this.state.finished
-            ? (
-              <div className='subtitles'>
-                <p>
-                  Player {checkers.heuristic(this.state.state) > 0 ? 'P' : 'Q'} wins. Congratulations!
-                  <br />
-                </p>
-                <p>
-                  Doubleclick to play again.
-                </p>
-              </div>
-            )
-            : ''
+          this.state.finished && (
+            <div className='subtitles'>
+              <p>
+                {checkers.heuristic(this.state.state) > 0 ? 'Brown' : 'Beige'} wins. Congratulations!
+                <br />
+              </p>
+              <p>
+                Doubleclick to play again.
+              </p>
+            </div>
+          )
         }
       </div>
     )

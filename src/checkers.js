@@ -37,7 +37,7 @@ export const checkers = new Game({
 const move = (state, startPoint, direction) =>
   onBoard(endPoint(state, startPoint, direction)) &&
     !occupied(state, endPoint(state, startPoint, direction))
-    ? [[startPoint, endPoint(state, startPoint, direction)]]
+    ? [[startPoint, endPointRoyal(state, startPoint, direction)]]
     : []
 
 const jump = (state, [y, x, royal], direction, prev = []) =>
@@ -45,24 +45,36 @@ const jump = (state, [y, x, royal], direction, prev = []) =>
     !occupied(state, endPoint(state, [y, x], direction, 2)) &&
     occupiedBy(state, endPoint(state, [y, x], direction), state.opponent)
     ? [
-      [...prev, [y, x, royal], endPoint(state, [y, x, royal], direction, 2)],
-      ...directions(royal).flatMap(direction2 =>
-        jump(
+      [
+        ...prev,
+        [y, x, royal],
+        endPointRoyal(state, [y, x, royal], direction, 2)
+      ],
+      ...directions(crowned(state, [y, x, royal], direction, 2))
+        .flatMap(direction2 => jump(
           prev.length === 1 ? state : checkers._result(state, prev),
-          endPoint(state, [y, x, royal], direction, 2),
+          endPointRoyal(state, [y, x, royal], direction, 2),
           direction2,
           [...prev, [y, x, royal]]
         )
-      )
+        )
     ]
     : []
 
 const endPoint = (state, [y, x, royal], [forward, sideward], steps = 1) => [
   y + forward * playerDirection(state) * steps,
-  x + sideward * steps,
-  y + forward * playerDirection(state) * steps === 3.5 + 3.5 * playerDirection(state)
-    ? true
-    : royal
+  x + sideward * steps
+]
+
+const crowned = (state, [y, x, royal], [forward, sideward], steps = 1) =>
+  royal ||
+  y + forward * playerDirection(state) * steps === 3.5 + 3.5 * playerDirection(state) ||
+  (steps === 2 && state[state.opponent].find(([y2, x2]) =>
+    y2 === y + forward * playerDirection(state) && x2 === x + sideward)[2])
+
+const endPointRoyal = (state, [y, x, royal], [forward, sideward], steps = 1) => [
+  ...endPoint(state, [y, x, royal], [forward, sideward], steps),
+  crowned(state, [y, x, royal], [forward, sideward], steps)
 ]
 
 const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
