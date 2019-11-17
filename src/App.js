@@ -10,15 +10,32 @@ class App extends React.Component {
     this.state = {
       state: checkers.initialState,
       clickedChecker: [],
-      highlights: []
+      highlights: [],
+      finished: false
     }
   }
 
   render () {
+    if (checkers.terminalTest(this.state.state)) {
+      this.setState({ finished: true })
+    }
+
     const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
     return (
-      <div className='app'>
+      <div
+        className='app'
+        onDoubleClick={() => {
+          if (this.state.finished) {
+            this.setState({
+              state: checkers.initialState,
+              clickedChecker: [],
+              highlights: [],
+              finished: false
+            })
+          }
+        }}
+      >
         <Board
           highlights={this.state.highlights}
           parentCallback={(y, x) =>
@@ -49,6 +66,21 @@ class App extends React.Component {
             }}
           />
         )}
+        {
+          this.state.finished
+            ? (
+              <div className='subtitles'>
+                <p>
+                  Player {checkers.heuristic(this.state.state) > 0 ? 'P' : 'Q'} wins. Congratulations!
+                  <br />
+                </p>
+                <p>
+                  Doubleclick to play again.
+                </p>
+              </div>
+            )
+            : ''
+        }
       </div>
     )
   }
