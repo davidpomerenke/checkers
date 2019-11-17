@@ -6,7 +6,7 @@ export default class Square extends React.Component {
       ? 'light-tile'
       : !highlighted
         ? 'dark-tile'
-        : 'dark-tile dark-tile-active'
+        : 'dark-tile active'
   }
 
   render () {

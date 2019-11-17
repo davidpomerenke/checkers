@@ -14,7 +14,8 @@ class App extends React.Component {
       highlights: [],
       pai: undefined,
       qai: undefined,
-      finished: false
+      finished: false,
+      message: ''
     }
   }
 
@@ -119,6 +120,11 @@ class App extends React.Component {
               Make a move, or doubleclick if the algorithm should play the beige checkers.
             </p>
           )}
+          {this.state.message !== '' &&
+            <p>
+              {this.state.message}
+            </p>
+          }
         </div>
       </div>
     )
