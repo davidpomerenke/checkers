@@ -30,7 +30,7 @@ body {
 
 .light-tile {
   background-color: beige;
-  box-shadow: inset 0 0 3vmin gray;
+  box-shadow: inset 0 0 6vmin gray;
 }
 
 .dark-tile {
@@ -87,16 +87,16 @@ body {
   position: absolute;
   top: 80vh;
   width: 100vw;
-  font-family: Helvetica;
-  font-size: 4vmin;
-  color: yellow;
 }
 
 .subtitles p {
+  font-family: Helvetica;
+  font-size: 4vmin;
+  color: yellow;
   line-height: 1.5;
   max-width: 100vmin;
   display: inline;
-  background-color: rgba(0, 0, 0, 0.9);
-  padding-top: 1vmin;
-  padding-bottom: 0;
+  background-color: rgba(30, 30, 30, 0.9);
+  padding-top: 0.3vmin;
+  padding-bottom: 0.3vmin;
 }

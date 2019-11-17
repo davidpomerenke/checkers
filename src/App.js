@@ -1,6 +1,7 @@
 import React from 'react'
 import './App.css'
 import { checkers } from './checkers'
+import { depthLimitedMinimaxDecision, depthLimitedMaximinDecision } from './minimax'
 import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
 
@@ -11,30 +12,42 @@ class App extends React.Component {
       state: checkers.initialState,
       clickedChecker: [],
       highlights: [],
+      pai: undefined,
+      qai: undefined,
       finished: false
     }
   }
 
   render () {
-    if (checkers.terminalTest(this.state.state) && !this.state.finished) {
-      this.setState({ finished: true })
-    }
-
-    if (this.state.pai && this.state.state.player === 'p') {
-      console.log('Hi, I\'m Ada the AI. It\'s my turn, nice!')
-    } else if (this.state.qai && this.state.state.player === 'q') {
-      console.log('Hi, I\'m Alan the AI. It\'s my turn, cool!')
-    }
+    setTimeout(() => {
+      if (checkers.terminalTest(this.state.state)) {
+        if (!this.state.finished) {
+          this.setState({ finished: true })
+        }
+      } else if (this.state.pai && this.state.state.player === 'p') {
+        this.setState({
+          state: checkers.result(
+            this.state.state,
+            depthLimitedMinimaxDecision(checkers, this.state.state, 4).action)
+        })
+      } else if (this.state.qai && this.state.state.player === 'q') {
+        this.setState({
+          state: checkers.result(
+            this.state.state,
+            depthLimitedMaximinDecision(checkers, this.state.state, 4).action)
+        })
+      }
+    }, 1000)
 
     return (
       <div
         className='app'
         onDoubleClick={() => {
-          if (!('pai' in this.state)) {
+          if (this.state.pai === undefined) {
             this.setState({
               pai: true
             })
-          } else if (!('qai' in this.state)) {
+          } else if (this.state.qai === undefined) {
             this.setState({
               qai: true
             })
@@ -53,8 +66,8 @@ class App extends React.Component {
         <Board
           highlights={this.state.highlights}
           parentCallback={(y, x) => {
-            if (!('pai' in this.state)) this.setState({ pai: false })
-            else if (!('qai' in this.state)) this.setState({ qai: false })
+            if (this.state.pai === undefined) this.setState({ pai: false })
+            else if (this.state === undefined) this.setState({ qai: false })
 
             this.setState({
               state: checkers.result(this.state.state, checkers.actions(this.state.state).filter(action =>
@@ -70,20 +83,22 @@ class App extends React.Component {
             })
           }}
         />
-        {['p', 'q'].map(p =>
-          <CheckersGroup
-            key={p}
-            player={p}
-            pieces={this.state.state[p]}
-            parentCallback={(y, x) => {
-              this.setState({
-                clickedChecker: [y, x],
-                highlights: checkers.actions(this.state.state).filter(action =>
-                  eq(action[0], [y, x])).map(action => action[action.length - 1])
-              })
-            }}
-          />
-        )}
+        {
+          ['p', 'q'].map(p =>
+            <CheckersGroup
+              key={p}
+              player={p}
+              pieces={this.state.state[p]}
+              parentCallback={(y, x) => {
+                this.setState({
+                  clickedChecker: [y, x],
+                  highlights: checkers.actions(this.state.state).filter(action =>
+                    eq(action[0], [y, x])).map(action => action[action.length - 1])
+                })
+              }}
+            />
+          )
+        }
         <div className='subtitles'>
           {this.state.finished && (
             <p>
@@ -91,18 +106,18 @@ class App extends React.Component {
               Doubleclick to play again.
             </p>
           )}
-          {'pai' in this.state || (
+          {this.state.pai === undefined && (
             <p>
               Brown starts. <br />
-              Make a move or doubleclick if the AI should play the brown side.
+              Make a move, or doubleclick if the algorithm should play the brown checkers.
             </p>
           )}
-          {'pai' in this.state && ('qai' in this.state || (
+          {this.state.pai !== undefined && this.state.qai === undefined && (
             <p>
               Beige is next. <br />
-              Make a move or doubleclick if the AI should play the beige side.
+              Make a move, or doubleclick if the algorithm should play the beige checkers.
             </p>
-          ))}
+          )}
         </div>
       </div>
     )
