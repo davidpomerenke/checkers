@@ -57,8 +57,13 @@ const jump = (state, [y, x, royal], direction, prev = []) =>
     ]
     : []
 
-const endPoint = (state, [y, x, royal], [forward, sideward], steps = 1) =>
-  [y + forward * playerDirection(state) * steps, x + sideward * steps, royal]
+const endPoint = (state, [y, x, royal], [forward, sideward], steps = 1) => [
+  y + forward * playerDirection(state) * steps,
+  x + sideward * steps,
+  y + forward * playerDirection(state) * steps === 3.5 + 3.5 * playerDirection(state)
+    ? true
+    : royal
+]
 
 const onBoard = ([y, x]) => y >= 0 && y <= 7 && x >= 0 && x <= 7
 
