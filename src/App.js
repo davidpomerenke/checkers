@@ -20,17 +20,31 @@ class App extends React.Component {
       this.setState({ finished: true })
     }
 
-    const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
+    if (this.state.pai && this.state.state.player === 'p') {
+      console.log('Hi, I\'m Ada the AI. It\'s my turn, nice!')
+    } else if (this.state.qai && this.state.state.player === 'q') {
+      console.log('Hi, I\'m Alan the AI. It\'s my turn, cool!')
+    }
 
     return (
       <div
         className='app'
         onDoubleClick={() => {
-          if (this.state.finished) {
+          if (!('pai' in this.state)) {
+            this.setState({
+              pai: true
+            })
+          } else if (!('qai' in this.state)) {
+            this.setState({
+              qai: true
+            })
+          } else if (this.state.finished) {
             this.setState({
               state: checkers.initialState,
               clickedChecker: [],
               highlights: [],
+              pai: undefined,
+              qai: undefined,
               finished: false
             })
           }
@@ -38,7 +52,10 @@ class App extends React.Component {
       >
         <Board
           highlights={this.state.highlights}
-          parentCallback={(y, x) =>
+          parentCallback={(y, x) => {
+            if (!('pai' in this.state)) this.setState({ pai: false })
+            else if (!('qai' in this.state)) this.setState({ qai: false })
+
             this.setState({
               state: checkers.result(this.state.state, checkers.actions(this.state.state).filter(action =>
                 eq(action[0], this.state.clickedChecker) &&
@@ -50,7 +67,8 @@ class App extends React.Component {
                * let the user choose, somehow
                */
               highlights: []
-            })}
+            })
+          }}
         />
         {['p', 'q'].map(p =>
           <CheckersGroup
@@ -66,22 +84,31 @@ class App extends React.Component {
             }}
           />
         )}
-        {
-          this.state.finished && (
-            <div className='subtitles'>
-              <p>
-                {checkers.heuristic(this.state.state) > 0 ? 'Brown' : 'Beige'} wins. Congratulations!
-                <br />
-              </p>
-              <p>
-                Doubleclick to play again.
-              </p>
-            </div>
-          )
-        }
+        <div className='subtitles'>
+          {this.state.finished && (
+            <p>
+              {checkers.heuristic(this.state.state) > 0 ? 'Brown' : 'Beige'} wins. Congratulations! <br />
+              Doubleclick to play again.
+            </p>
+          )}
+          {'pai' in this.state || (
+            <p>
+              Brown starts. <br />
+              Make a move or doubleclick if the AI should play the brown side.
+            </p>
+          )}
+          {'pai' in this.state && ('qai' in this.state || (
+            <p>
+              Beige is next. <br />
+              Make a move or doubleclick if the AI should play the beige side.
+            </p>
+          ))}
+        </div>
       </div>
     )
   }
 }
+
+const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
 export default App
