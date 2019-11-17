@@ -6,7 +6,7 @@ import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
 
 class App extends React.Component {
-  constructor() {
+  constructor () {
     super()
     this.state = {
       state: checkers.initialState,
@@ -133,11 +133,11 @@ class App extends React.Component {
               Make a move, or doubleclick if the algorithm should play the beige checkers.
             </p>
           )}
-          {this.state.message !== '' &&
+          {this.state.message !== '' && (
             <p>
               {this.state.message}
             </p>
-          }
+          )}
         </div>
       </div>
     )
