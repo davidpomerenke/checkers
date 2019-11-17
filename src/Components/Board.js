@@ -1,5 +1,5 @@
 import React from 'react'
-import Row from './Row'
+import Square from './Square'
 
 export default class Board extends React.Component {
   render () {
@@ -7,13 +7,24 @@ export default class Board extends React.Component {
       <div className='board'>
         {
           [7, 6, 5, 4, 3, 2, 1, 0].map(y =>
-            <Row
-              y={y}
-              highlights={this.props.highlights}
-              state={this.props.state}
-              key={y.toString()}
-              parentCallback={this.props.parentCallback}
-            />
+            <div className='row' key={y}>
+              {
+                [0, 1, 2, 3, 4, 5, 6, 7].map(x =>
+                  <Square
+                    highlighted={
+                      this.props.highlights.some(([y2, x2]) => y2 === y && x2 === x)
+                    }
+                    y={y}
+                    x={x}
+                    state={this.props.state}
+                    parentCallback={
+                      () => this.props.parentCallback(y, x)
+                    }
+                    key={x}
+                  />
+                )
+              }
+            </div>
           )
         }
       </div>
