@@ -87,7 +87,7 @@ const occupiedBy = (state, posA, player) =>
 
 const playerDirection = state => state.player === 'p' ? +1 : -1
 
-const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
+export const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
 const directions = royal => [[+1, -1], [+1, +1], ...royal ? [[-1, -1], [-1, +1]] : []]
 

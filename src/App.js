@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import { checkers } from './checkers'
+import { checkers, eq } from './checkers'
 import { depthLimitedMinimaxDecision, depthLimitedMaximinDecision } from './minimax'
 import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
@@ -28,16 +28,16 @@ class App extends React.Component {
         this.setState({
           state: checkers.result(
             this.state.state,
-            depthLimitedMinimaxDecision(checkers, this.state.state, 4).action)
+            depthLimitedMinimaxDecision(checkers, this.state.state, 3).action)
         })
       } else if (this.state.qai && this.state.state.player === 'q') {
         this.setState({
           state: checkers.result(
             this.state.state,
-            depthLimitedMaximinDecision(checkers, this.state.state, 4).action)
+            depthLimitedMaximinDecision(checkers, this.state.state, 3).action)
         })
       }
-    }, 1000)
+    }, 500)
 
     return (
       <div
@@ -67,7 +67,7 @@ class App extends React.Component {
           highlights={this.state.highlights}
           parentCallback={(y, x) => {
             if (this.state.pai === undefined) this.setState({ pai: false })
-            else if (this.state === undefined) this.setState({ qai: false })
+            else if (this.state.qai === undefined) this.setState({ qai: false })
 
             this.setState({
               state: checkers.result(this.state.state, checkers.actions(this.state.state).filter(action =>
@@ -89,6 +89,7 @@ class App extends React.Component {
               key={p}
               player={p}
               pieces={this.state.state[p]}
+              clickedChecker={this.state.clickedChecker}
               parentCallback={(y, x) => {
                 this.setState({
                   clickedChecker: [y, x],
@@ -123,7 +124,5 @@ class App extends React.Component {
     )
   }
 }
-
-const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
 export default App

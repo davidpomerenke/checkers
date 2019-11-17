@@ -6,6 +6,7 @@ export default class CheckersGroup extends React.Component {
     return this.props.pieces.map(([y, x]) =>
       <Checker
         player={this.props.player}
+        clickedChecker={this.props.clickedChecker}
         parentCallback={() => this.props.parentCallback(y, x)}
         y={y}
         x={x}
