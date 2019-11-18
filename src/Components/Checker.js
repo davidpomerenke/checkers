@@ -1,5 +1,5 @@
 import React from 'react'
-import { eq } from '../checkers'
+import { eq } from '../aima/checkers'
 
 const checkerStyle = (y, x) => ({
   top: 'calc(50vh - 50vmin + 1.25vmin + ' + 12.5 * (7 - y) + 'vmin)',
@@ -15,7 +15,7 @@ export default class Checker extends React.Component {
         }}
         className={
           (this.props.player === 'p' ? 'checker-dark' : 'checker-light') +
-          (eq(this.props.highlightedChecker, [this.props.y, this.props.x]) ? ' active' : '') +
+          (eq(this.props.selectedChecker, [this.props.y, this.props.x]) ? ' active' : '') +
           (this.props.royal ? ' royal' : '')
         }
         style={checkerStyle(this.props.y, this.props.x)}

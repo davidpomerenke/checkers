@@ -1,8 +1,8 @@
 import React from 'react'
 import './App.css'
-import { checkers, eq } from './checkers'
-import { minimaxDecision, maximinDecision } from './minimax'
-import { alphaBetaSearch, betaAlphaSearch } from './alphabeta'
+import { checkers, eq } from './aima/checkers'
+import { minimaxDecision, maximinDecision } from './aima/minimax'
+import { alphaBetaSearch, betaAlphaSearch } from './aima/alphabeta'
 import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
 import Subtitles from './Components/Subtitles'
@@ -24,13 +24,12 @@ const log = (player, action) =>
     action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 class App extends React.Component {
-  constructor () {
+  constructor() {
     super()
     // initialize game state and ui configuration
     this.state = {
       state: checkers.initialState, // game state (cf. `checkers.js`)
-      highlightedChecker: [], // highlighted checker piece coordinates
-      highlights: [], // highlighted board squares coordinates
+      selectedChecker: [], // highlighted checker piece coordinates
       ai: { // whether the players are played by an ai and if so which one
         p: undefined,
         q: undefined
@@ -40,14 +39,15 @@ class App extends React.Component {
     // note that react state variables are accessed via `this.state` in general,
     // so the game state is accessed via `this.state.state`
 
-    setTimeout(() => this.aiMoves(), config.pauseTime)
+    setTimeout(() => this.regularActions(), config.pauseTime)
   }
 
   render () {
     return (
       <div className='app' onDoubleClick={() => this.handleDoubleClick()}>
         <Board
-          highlights={this.state.highlights}
+          highlightedSquares={checkers.actions(this.state.state).filter(action =>
+            eq(action[0], this.state.selectedChecker)).map(action => action[action.length - 1])}
           parentCallback={(y, x, validMove) => this.moveResult(y, x, validMove)}
         />
         {['p', 'q'].map(player =>
@@ -55,7 +55,7 @@ class App extends React.Component {
             key={player}
             player={player}
             pieces={this.state.state[player]}
-            highlightedChecker={this.state.highlightedChecker}
+            selectedChecker={this.state.selectedChecker}
             parentCallback={(y, x) => this.highlightResult(y, x, player)}
           />
         )}
@@ -79,8 +79,7 @@ class App extends React.Component {
       // reset the game state and the ui
       this.setState({
         state: checkers.initialState,
-        highlightedChecker: [],
-        highlights: [],
+        selectedChecker: [],
         ai: {
           p: undefined,
           q: undefined
@@ -102,17 +101,15 @@ class App extends React.Component {
         state: checkers.result( // update checker positions
           this.state.state,
           checkers.actions(this.state.state).filter(action =>
-            eq(action[0], this.state.highlightedChecker) &&
+            eq(action[0], this.state.selectedChecker) &&
             eq(action[action.length - 1], [y, x])
           )[0]),
         /**
          * TODO:
          * when there are several paths to one square, let the user choose, somehow
          * at the moment, the fist (arbitrary) move is chosen: `(...).filter(...)[0]`
-         * remove highlights
          */
-        highlightedChecker: [],
-        highlights: [],
+        selectedChecker: [],
         message: checkers.terminalTest(this.state.state) ? <CongratulationMessage state='this.state.state' /> : ''
       })
     } else this.setState({ message: errorMessage('invalid move', this.state, y, x) })
@@ -122,54 +119,55 @@ class App extends React.Component {
     if (player === this.state.state.player) {
       if (checkers.actions(this.state.state).some(action => eq(action[0], [y, x]))) {
         this.setState({
-          highlightedChecker: [y, x],
-          message: '',
-          highlights: checkers.actions(this.state.state).filter(action =>
-            eq(action[0], [y, x])).map(action => action[action.length - 1])
+          selectedChecker: [y, x],
+          message: ''
         })
       }
     }
     this.setState({ message: errorMessage('invalid checker', this.state, y, x, player) })
   }
 
-  aiMoves () {
+  regularActions () {
     if (!checkers.terminalTest(this.state.state)) {
-      const pSearch = config.pruning ? alphaBetaSearch : minimaxDecision
-      const qSearch = config.pruning ? betaAlphaSearch : maximinDecision
-      const search = player => player === 'p' ? pSearch : qSearch
-      const move = player => {
-        let action
-        if (this.state.ai[player] === 'random') {
-          // random move
-          const randAction = actions => actions[Math.floor(Math.random() * actions.length)]
-          action = randAction(checkers.actions(this.state.state))
-        } else {
-          // minimax move
-          action = search(player)(
-            checkers, this.state.state, config.limitLevels[this.state.ai[player]]
-          ).action
-        }
-        log(player, action)
-        this.setState({
-          state: checkers.result(
-            this.state.state,
-            action),
-          message: '',
-          highlights: [],
-          highlightedChecker: []
-        })
-      }
-      if (this.state.ai.p && this.state.state.player === 'p') {
-        move('p')
-      } else if (this.state.ai.q && this.state.state.player === 'q') {
-        move('q')
-      }
+      this.aiMoves()
     } else {
       this.setState({
         message: (checkers.heuristic(this.state.state) > 0 ? 'Brown' : 'Beige') + ' wins. Congratulations!'
       })
     }
-    setTimeout(() => this.aiMoves(), config.pauseTime)
+    setTimeout(() => this.regularActions(), config.pauseTime)
+  }
+
+  aiMoves () {
+    const pSearch = config.pruning ? alphaBetaSearch : minimaxDecision
+    const qSearch = config.pruning ? betaAlphaSearch : maximinDecision
+    const search = player => player === 'p' ? pSearch : qSearch
+    const move = player => {
+      let action
+      if (this.state.ai[player] === 'random') {
+        // random move
+        const randAction = actions => actions[Math.floor(Math.random() * actions.length)]
+        action = randAction(checkers.actions(this.state.state))
+      } else {
+        // minimax move
+        action = search(player)(
+          checkers, this.state.state, config.limitLevels[this.state.ai[player]]
+        ).action
+      }
+      log(player, action)
+      this.setState({
+        state: checkers.result(
+          this.state.state,
+          action),
+        message: '',
+        selectedChecker: []
+      })
+    }
+    if (this.state.ai.p && this.state.state.player === 'p') {
+      move('p')
+    } else if (this.state.ai.q && this.state.state.player === 'q') {
+      move('q')
+    }
   }
 }
 

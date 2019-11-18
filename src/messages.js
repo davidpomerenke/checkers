@@ -1,19 +1,19 @@
 import React from 'react'
-import { checkers, eq, dist, playerDirection } from './checkers'
+import { checkers, eq, dist, playerDirection } from './aima/checkers'
 
 export const errorMessage = (type, state, y, x, player) => {
   let message = '' // clear prior subtitle messages
   if (type === 'invalid move') {
-    if (state.highlightedChecker.length !== 2) {
+    if (state.selectedChecker.length !== 2) {
       message = 'Please select the checker you want to move.'
     } else if ((y + x) % 2 === 1) {
       message = 'You can only move diagonally – that is, to another black square.'
-    } else if ((y - state.highlightedChecker[0]) * playerDirection(state.state) <= 0) {
+    } else if ((y - state.selectedChecker[0]) * playerDirection(state.state) <= 0) {
       message = 'You can only move forward (unless you are royal).'
     } else if (
       checkers.actions(state.state).some(action =>
-        eq(action[0], state.highlightedChecker) && dist(action[0], action[1]) / 2 === 2) &&
-      dist(state.highlightedChecker, [y, x]) / 2 === 1
+        eq(action[0], state.selectedChecker) && dist(action[0], action[1]) / 2 === 2) &&
+      dist(state.selectedChecker, [y, x]) / 2 === 1
     ) {
       message = 'There is a jump available, so you need to jump.' // the modal fallacy
     } else {
@@ -22,7 +22,7 @@ export const errorMessage = (type, state, y, x, player) => {
   } else if (type === 'invalid checker') {
     if (state.state.player !== player) {
       // error messages for checker selections of the wrong colour
-      if (state.highlightedChecker.length === 2) {
+      if (state.selectedChecker.length === 2) {
         // if this is an attempted move
         message = 'You can only move to an empty square.'
       } else {

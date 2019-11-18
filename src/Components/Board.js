@@ -12,7 +12,7 @@ export default class Board extends React.Component {
                 [0, 1, 2, 3, 4, 5, 6, 7].map(x =>
                   <Square
                     highlighted={
-                      this.props.highlights.some(([y2, x2]) => y2 === y && x2 === x)
+                      this.props.highlightedSquares.some(([y2, x2]) => y2 === y && x2 === x)
                     }
                     y={y}
                     x={x}
