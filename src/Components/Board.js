@@ -18,7 +18,7 @@ export default class Board extends React.Component {
                     x={x}
                     state={this.props.state}
                     parentCallback={
-                      () => this.props.parentCallback(y, x)
+                      (validMove) => this.props.parentCallback(y, x, validMove)
                     }
                     key={x}
                   />

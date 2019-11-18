@@ -1,3 +1,7 @@
+* {
+  user-select: none;
+}
+
 body {
   overflow: hidden;
   background-color: gray;
@@ -8,6 +12,8 @@ body {
 }
 
 .app {
+  position: relative;
+  overflow: hidden;
   height: 100vh;
   width: 100vw;
 }
@@ -85,18 +91,52 @@ body {
 .subtitles {
   text-align: center;
   position: absolute;
-  top: 80vh;
-  width: 100vw;
+  bottom: calc(12vh - 10vmin);
+  width: calc(40vmin + 40vw);
+  left: 50vw;
 }
 
-.subtitles p {
-  font-family: Helvetica;
-  font-size: 4vmin;
-  color: yellow;
-  line-height: 1.5;
-  max-width: 100vmin;
+.subtitles p, .subtitles div.ai-select {
+  position: relative;
+  left: -50%;
+}
+
+.subtitles p, .subtitles span {
   display: inline;
-  background-color: rgba(30, 30, 30, 0.9);
-  padding-top: 0.3vmin;
-  padding-bottom: 0.3vmin;
+  box-decoration-break: clone;
+  font-family: Arial, sans-serif;
+  color: yellow;
+  font-size: 4vmin;
+  line-height: 1.5;
+  background-color: rgba(30, 30, 30, 1);
+  padding-top: 0vmin;
+  padding-bottom: 0vmin;
+  padding-left: 2vmin;
+  padding-right: 2vmin;
+  box-shadow: 0 0 1vmin black;
+}
+
+/*
+ * this is confusing, but it is because css is confusing.
+ * the original problem is that css does break text intra inline elements,
+ * but does not break text inter inline elements –
+ * but if one switches to inline-block elements they have a different height
+ * and there is no apparent way to make them the same height
+ * :---
+ */
+
+.subtitles div.ai-select * {
+  position: relative;
+  left: 0;
+}
+
+.subtitles .ai-select div {
+  display: inline-block;
+  margin-left: 1vmin;
+  margin-right: 1vmin;
+}
+
+.subtitles .ai-select span {
+  color: cyan;
+  cursor: pointer;
 }

@@ -10,12 +10,12 @@ export default class Checker extends React.Component {
   render () {
     return (
       <div
-        onClick={e => {
+        onClick={() => {
           this.props.parentCallback()
         }}
         className={
           (this.props.player === 'p' ? 'checker-dark' : 'checker-light') +
-          (eq(this.props.clickedChecker, [this.props.y, this.props.x]) ? ' active' : '') +
+          (eq(this.props.highlightedChecker, [this.props.y, this.props.x]) ? ' active' : '') +
           (this.props.royal ? ' royal' : '')
         }
         style={checkerStyle(this.props.y, this.props.x)}

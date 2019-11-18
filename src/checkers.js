@@ -85,7 +85,7 @@ const occupied = (state, pos) =>
 const occupiedBy = (state, posA, player) =>
   state[player].some(posB => eq(posA, posB))
 
-const playerDirection = state => state.player === 'p' ? +1 : -1
+export const playerDirection = state => state.player === 'p' ? +1 : -1
 
 export const eq = ([y1, x1], [y2, x2]) => y1 === y2 && x1 === x2
 
@@ -114,6 +114,6 @@ const stepResult = (state, startPoint, endPoint, nextPlayer) => ({
   opponent: nextPlayer ? state.player : state.opponent
 })
 
-const dist = ([y1, x1], [y2, x2]) => Math.abs(y2 - y1) + Math.abs(x2 - x1)
+export const dist = ([y1, x1], [y2, x2]) => Math.abs(y2 - y1) + Math.abs(x2 - x1)
 
 const intermediate = ([y1, x1], [y2, x2]) => [(y1 + y2) / 2, (x1 + x2) / 2]
