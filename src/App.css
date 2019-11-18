@@ -66,8 +66,9 @@ body {
   box-shadow: inset 0 0 3vmin rgb(101, 67, 33), 0 0 1vmin black;
 }
 
-.checker-light:hover, .checker-light.active {
-  box-shadow: inset 0 0 3vmin rgb(101, 67, 33), 0 0 1vmin gray;
+.checker-light.highlighted {
+  border: 2px solid lawngreen;
+  box-shadow: inset 0 0 3vmin rgb(101, 67, 33), 0 0 1vmin lawngreen;
 }
 
 .checker-dark {
@@ -75,17 +76,17 @@ body {
   box-shadow: inset 0 0 3vmin rgb(210,180,140), 0 0 1vmin black;
 }
 
-.checker-dark:hover, .checker-dark.active {
-  background-color: rgb(101, 67, 33);
-  box-shadow: inset 0 0 3vmin rgb(210,180,140), 0 0 1vmin gray;
+.checker-dark.highlighted {
+  border: 2px solid lawngreen;
+  box-shadow: inset 0 0 3vmin rgb(210,180,140), 0 0 1vmin lawngreen;
 }
 
 .royal {
   box-shadow: inset 0 0 3vmin red, 0 0 1vmin gray;
 }
 
-.royal:hover, .royal.active {
-  box-shadow: inset 0 0 3vmin red, 0 0 1vmin gray;
+.royal.highlighted {
+  box-shadow: inset 0 0 3vmin red, 0 0 1vmin lawngreen;
 }
 
 .subtitles {

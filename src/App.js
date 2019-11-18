@@ -15,7 +15,8 @@ const config = {
     intermediate: 2,
     smart: 3
   },
-  pauseTime: 500 // ms
+  pauseTime: 500 /* ms */,
+  highlightsDefault: true
 }
 
 const log = (player, action) =>
@@ -24,7 +25,7 @@ const log = (player, action) =>
     action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 class App extends React.Component {
-  constructor() {
+  constructor () {
     super()
     // initialize game state and ui configuration
     this.state = {
@@ -34,7 +35,8 @@ class App extends React.Component {
         p: undefined,
         q: undefined
       },
-      message: '' // message to be displayed in subtitle style
+      message: '', // message to be displayed in subtitle style
+      highlights: config.highlightsDefault // whether possible actions are highlighted
     }
     // note that react state variables are accessed via `this.state` in general,
     // so the game state is accessed via `this.state.state`
@@ -46,8 +48,12 @@ class App extends React.Component {
     return (
       <div className='app' onDoubleClick={() => this.handleDoubleClick()}>
         <Board
-          highlightedSquares={checkers.actions(this.state.state).filter(action =>
-            eq(action[0], this.state.selectedChecker)).map(action => action[action.length - 1])}
+          highlightedSquares={
+            checkers.actions(this.state.state)
+              .filter(action => eq(action[0], this.state.selectedChecker))
+              .map(action => action[action.length - 1])
+          }
+          showHighlight={this.state.highlights}
           parentCallback={(y, x, validMove) => this.moveResult(y, x, validMove)}
         />
         {['p', 'q'].map(player =>
@@ -56,6 +62,11 @@ class App extends React.Component {
             player={player}
             pieces={this.state.state[player]}
             selectedChecker={this.state.selectedChecker}
+            highlightedCheckers={
+              this.state.highlights && this.state.state.player === player
+                ? checkers.actions(this.state.state).map(action => action[0])
+                : []
+            }
             parentCallback={(y, x) => this.highlightResult(y, x, player)}
           />
         )}

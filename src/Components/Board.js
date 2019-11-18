@@ -14,6 +14,7 @@ export default class Board extends React.Component {
                     highlighted={
                       this.props.highlightedSquares.some(([y2, x2]) => y2 === y && x2 === x)
                     }
+                    showHighlight={this.props.showHighlight}
                     y={y}
                     x={x}
                     state={this.props.state}

@@ -1,5 +1,6 @@
 import React from 'react'
 import Checker from './Checker'
+import { eq } from '../aima/checkers'
 
 export default class CheckersGroup extends React.Component {
   render () {
@@ -7,10 +8,11 @@ export default class CheckersGroup extends React.Component {
       <Checker
         player={this.props.player}
         selectedChecker={this.props.selectedChecker}
+        highlighted={this.props.highlightedCheckers.some(pos => eq(pos, [y, x]))}
         parentCallback={() => this.props.parentCallback(y, x)}
         y={y}
         x={x}
-        royal={this.props.pieces.find(p => p[0] === y && p[1] === x)[2]}
+        royal={this.props.pieces.find(p => eq(p, [y, x]))[2]}
         key={y + ',' + x}
       />
     )
