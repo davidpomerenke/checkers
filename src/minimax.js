@@ -1,4 +1,4 @@
-export const depthLimitedMinimaxDecision = (game, state, limit) =>
+export const minimaxDecision = (game, state, limit) =>
   game.actions(state)
     .map(action => ({
       action: action,
@@ -6,7 +6,7 @@ export const depthLimitedMinimaxDecision = (game, state, limit) =>
     }))
     .reduce((current, next) => next.outcome > current.outcome ? next : current)
 
-export const depthLimitedMaximinDecision = (game, state, limit) =>
+export const maximinDecision = (game, state, limit) =>
   game.actions(state)
     .map(action => ({
       action: action,
