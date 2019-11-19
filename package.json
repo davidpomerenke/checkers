@@ -1,21 +1,33 @@
 {
-  "name": "checkers",
+  "name": "aima-checkers",
   "version": "0.1.0",
+  "author": "David Pomerenke",
+  "description": "Implementation of Russell & Norvig, \"Artificial Intelligence - A Modern Approach\". ",
   "homepage": "https://davidpomerenke.github.io/checkers",
   "repository": {
     "url": "https://github.com/davidpomerenke/checkers"
   },
-  "private": true,
+  "license": "ISC",
+  "keywords": [
+    "Checkers",
+    "Draughts",
+    "Game",
+    "Browser Game",
+    "Problem-Solving",
+    "Artificial Intelligence"
+  ],
   "dependencies": {
     "aima": "^0.2.5",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-scripts": "3.2.0"
   },
+  "devDependencies": {
+    "gh-pages": "^2.1.1"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -34,8 +46,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^2.1.1"
   }
 }
