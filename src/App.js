@@ -9,12 +9,12 @@ import Subtitles from './Components/Subtitles'
 
 const config = {
   pruning: false,
-  limitLevels: {
+  limits: {
     dumb: 1,
     intermediate: 2,
     smart: 3
   },
-  pauseTime: 200 /* ms */,
+  pauseTime: 700 /* ms */,
   highlightsDefault: true
 }
 
@@ -24,7 +24,7 @@ const log = (player, action) =>
     action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 class App extends React.Component {
-  constructor () {
+  constructor() {
     super()
     // initialize game state and ui configuration
     this.state = {
@@ -69,15 +69,24 @@ class App extends React.Component {
           />
         )}
         <Subtitles
-          parentCallback={(player, type) => {
-            const ai = this.state.ai
-            ai[player] = type
-            this.setState({ ai: ai })
-            this.aiMoves()
+          parentCallback={arg => {
+            if ('highlights' in arg) {
+              this.setState({ highlights: arg.highlights })
+            } else if ('ai' in arg) {
+              this.setState({
+                ai: {
+                  ...this.state.ai,
+                  [arg.ai[0]]: arg.ai[1]
+                }
+              })
+              setTimeout(() => this.aiMoves(), 0)
+            }
           }}
           error={this.state.error}
           ai={this.state.ai}
           state={this.state.state}
+          highlights={this.state.highlights}
+          limits={config.limits}
         />
       </div>
     )
@@ -116,9 +125,12 @@ class App extends React.Component {
           selectedChecker: [y, x],
           error: []
         })
+      } else {
+        this.setState({ error: ['invalid checker', this.state, y, x, player] })
       }
+    } else {
+      this.setState({ error: ['invalid checker', this.state, y, x, player] })
     }
-    this.setState({ error: ['invalid checker', this.state, y, x, player] })
   }
 
   regularActions () {
@@ -167,10 +179,9 @@ class App extends React.Component {
       } else {
         // minimax move
         action = search(player)(
-          checkers, this.state.state, config.limitLevels[this.state.ai[player]]
+          checkers, this.state.state, config.limits[this.state.ai[player]]
         ).action
       }
-      log(player, action)
       this.setState({ displayQueue: [action] })
       setTimeout(() => this.regularActions(), config.pauseTime)
     }

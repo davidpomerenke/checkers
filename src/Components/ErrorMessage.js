@@ -51,10 +51,16 @@ export default class ErrorMessage extends React.Component {
     const message = this.message(this.props.error[0], this.props.error[1], this.props.error[2], this.props.error[3], this.props.error[4])
     return message
       ? (
-        <p>
-          {message}
-          <br />
-        </p>)
+        <div>
+          <p>
+            {message}
+          </p>
+          <div>
+            <span onClick={() => this.props.parentCallback('help')}>
+              Read the rules.
+            </span>
+          </div>
+        </div>)
       : ''
   }
 }

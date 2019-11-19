@@ -1,19 +1,52 @@
 import React from 'react'
 import { checkers } from '../aima/checkers'
+import HelpMessage from './HelpMessage'
 import ErrorMessage from './ErrorMessage'
 
 export default class Subtitles extends React.Component {
+  constructor () {
+    super()
+    this.state = { help: false }
+  }
+
   render () {
     return (
-      <div className='subtitles'>
-        {this.props.error.length > 0 && (
-          <ErrorMessage error={this.props.error} />
+      <div className={'subtitles' + (!this.state.help ? ' marginal' : '')}>
+        {this.state.help && (
+          <HelpMessage
+            highlights={this.props.highlights}
+            limits={this.props.limits}
+            parentCallback={action =>
+              action === 'hide'
+                ? this.setState({ help: false })
+                : this.props.parentCallback({ highlights: !this.props.highlights })}
+          />
         )}
-        {this.props.ai.p === undefined && (
-          <WelcomeMessage p='p' parentCallback={type => this.props.parentCallback('p', type)} />
+        {this.props.error.length > 0 && !this.state.help && (
+          <ErrorMessage
+            error={this.props.error}
+            parentCallback={type => this.setState({ help: true })}
+          />
         )}
-        {this.props.ai.p !== undefined && this.props.ai.q === undefined && (
-          <WelcomeMessage p='q' parentCallback={type => this.props.parentCallback('q', type)} />
+        {this.props.ai.p === undefined && !this.state.help && (
+          <WelcomeMessage
+            p='p'
+            parentCallback={type =>
+              type === 'help'
+                ? this.setState({ help: true })
+                : this.props.parentCallback({ ai: ['p', type] })}
+            error={this.props.error}
+          />
+        )}
+        {this.props.ai.p !== undefined && this.props.ai.q === undefined && !this.state.help && (
+          <WelcomeMessage
+            p='q'
+            parentCallback={type =>
+              type === 'help'
+                ? this.setState({ help: true })
+                : this.props.parentCallback({ ai: ['q', type] })}
+            error={this.props.error}
+          />
         )}
         {checkers.terminalTest(this.props.state) && (
           <CongratulationMessage state={this.props.state} />
@@ -26,18 +59,21 @@ export default class Subtitles extends React.Component {
 class WelcomeMessage extends React.Component {
   render () {
     return (
-      <div className='ai-select'>
-        <div>
-          <p>
-            {this.props.p === 'p' ? 'Brown starts.' : 'Beige is next.'}
-          </p>
-        </div>
-        <div>
-          <span>
-            Read the rules.
-          </span>
-        </div>
-        <br />
+      <div>
+        {this.props.error.length === 0 && (
+          <div>
+            <div>
+              <p>
+                {this.props.p === 'p' ? 'Brown starts.' : 'Beige is next.'}
+              </p>
+            </div>
+            <div>
+              <span onClick={() => this.props.parentCallback('help')}>
+                Read the rules.
+              </span>
+            </div>
+          </div>
+        )}
         <div>
           <p>
             Select an AI for the brown side:
@@ -74,7 +110,7 @@ export class CongratulationMessage extends React.Component {
       <p>
         {checkers.heuristic(this.props.state) > 0 ? 'Brown' : 'Beige'} wins.
         Congratulations! <br />
-        Doubleclick to play again.
+        Reload to play again.
       </p>
     )
   }
