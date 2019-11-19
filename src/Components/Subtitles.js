@@ -1,20 +1,22 @@
 import React from 'react'
+import { checkers } from '../aima/checkers'
+import ErrorMessage from './ErrorMessage'
 
 export default class Subtitles extends React.Component {
   render () {
     return (
       <div className='subtitles'>
-        {this.props.message !== '' && (
-          <p>
-            {this.props.message}
-            <br />
-          </p>
+        {this.props.error.length > 0 && (
+          <ErrorMessage error={this.props.error} />
         )}
-        {this.props.pai === undefined && (
+        {this.props.ai.p === undefined && (
           <WelcomeMessage p='p' parentCallback={type => this.props.parentCallback('p', type)} />
         )}
-        {this.props.pai !== undefined && this.props.qai === undefined && (
+        {this.props.ai.p !== undefined && this.props.ai.q === undefined && (
           <WelcomeMessage p='q' parentCallback={type => this.props.parentCallback('q', type)} />
+        )}
+        {checkers.terminalTest(this.props.state) && (
+          <CongratulationMessage state={this.props.state} />
         )}
       </div>
     )
@@ -62,6 +64,18 @@ class WelcomeMessage extends React.Component {
           </span>
         </div>
       </div>
+    )
+  }
+}
+
+export class CongratulationMessage extends React.Component {
+  render () {
+    return (
+      <p>
+        {checkers.heuristic(this.props.state) > 0 ? 'Brown' : 'Beige'} wins.
+        Congratulations! <br />
+        Doubleclick to play again.
+      </p>
     )
   }
 }

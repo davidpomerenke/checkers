@@ -6,7 +6,6 @@ import { alphaBetaSearch, betaAlphaSearch } from './aima/alphabeta'
 import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
 import Subtitles from './Components/Subtitles'
-import { errorMessage, CongratulationMessage } from './messages'
 
 const config = {
   pruning: false,
@@ -15,7 +14,7 @@ const config = {
     intermediate: 2,
     smart: 3
   },
-  pauseTime: 500 /* ms */,
+  pauseTime: 200 /* ms */,
   highlightsDefault: true
 }
 
@@ -35,18 +34,17 @@ class App extends React.Component {
         p: undefined,
         q: undefined
       },
-      message: '', // message to be displayed in subtitle style
-      highlights: config.highlightsDefault // whether possible actions are highlighted
+      error: [], // user interaction errors to be shown as subtitles
+      highlights: config.highlightsDefault, // whether possible actions are highlighted
+      displayQueue: [] // contains action parts which still have to be displayed
     }
     // note that react state variables are accessed via `this.state` in general,
     // so the game state is accessed via `this.state.state`
-
-    setTimeout(() => this.regularActions(), config.pauseTime)
   }
 
   render () {
     return (
-      <div className='app' onDoubleClick={() => this.handleDoubleClick()}>
+      <div className='app'>
         <Board
           highlightedSquares={
             checkers.actions(this.state.state)
@@ -63,7 +61,7 @@ class App extends React.Component {
             pieces={this.state.state[player]}
             selectedChecker={this.state.selectedChecker}
             highlightedCheckers={
-              this.state.highlights && this.state.state.player === player
+              this.state.highlights && this.state.state.player === player && !this.state.ai[this.state.state.player]
                 ? checkers.actions(this.state.state).map(action => action[0])
                 : []
             }
@@ -71,32 +69,18 @@ class App extends React.Component {
           />
         )}
         <Subtitles
-          message={this.state.message}
           parentCallback={(player, type) => {
             const ai = this.state.ai
             ai[player] = type
             this.setState({ ai: ai })
+            this.aiMoves()
           }}
-          pai={this.state.ai.p}
-          qai={this.state.ai.q}
+          error={this.state.error}
+          ai={this.state.ai}
+          state={this.state.state}
         />
       </div>
     )
-  }
-
-  handleDoubleClick () {
-    // TODO: display help
-    if (checkers.terminalTest(this.state.state)) {
-      // reset the game state and the ui
-      this.setState({
-        state: checkers.initialState,
-        selectedChecker: [],
-        ai: {
-          p: undefined,
-          q: undefined
-        }
-      })
-    }
   }
 
   moveResult (y, x, validMove) {
@@ -109,21 +93,20 @@ class App extends React.Component {
 
       // perform move from highlighted checker to selected square
       this.setState({
-        state: checkers.result( // update checker positions
-          this.state.state,
+        displayQueue: [
           checkers.actions(this.state.state).filter(action =>
             eq(action[0], this.state.selectedChecker) &&
             eq(action[action.length - 1], [y, x])
-          )[0]),
-        /**
-         * TODO:
-         * when there are several paths to one square, let the user choose, somehow
-         * at the moment, the fist (arbitrary) move is chosen: `(...).filter(...)[0]`
-         */
-        selectedChecker: [],
-        message: checkers.terminalTest(this.state.state) ? <CongratulationMessage state='this.state.state' /> : ''
+          )[0]
+        ]
       })
-    } else this.setState({ message: errorMessage('invalid move', this.state, y, x) })
+      /**
+       * TODO:
+       * when there are several paths to one square, let the user choose, somehow
+       * at the moment, the fist (arbitrary) move is chosen: `(...).filter(...)[0]`
+       */
+      setTimeout(() => this.regularActions(), 0)
+    } else this.setState({ error: ['invalid move', this.state, y, x] })
   }
 
   highlightResult (y, x, player) {
@@ -131,22 +114,44 @@ class App extends React.Component {
       if (checkers.actions(this.state.state).some(action => eq(action[0], [y, x]))) {
         this.setState({
           selectedChecker: [y, x],
-          message: ''
+          error: []
         })
       }
     }
-    this.setState({ message: errorMessage('invalid checker', this.state, y, x, player) })
+    this.setState({ error: ['invalid checker', this.state, y, x, player] })
   }
 
   regularActions () {
     if (!checkers.terminalTest(this.state.state)) {
-      this.aiMoves()
-    } else {
-      this.setState({
-        message: (checkers.heuristic(this.state.state) > 0 ? 'Brown' : 'Beige') + ' wins. Congratulations!'
-      })
+      if (this.state.displayQueue.length > 0) {
+        const action = this.state.displayQueue[0]
+        if (this.state.displayQueue.length > 1 || action.length > 2) {
+          setTimeout(() => this.regularActions(), config.pauseTime)
+        } else {
+          setTimeout(() => this.aiMoves(), config.pauseTime)
+        }
+        log(this.state.state.player, action)
+        this.setState({
+          state: {
+            ...checkers.result(this.state.state, action.slice(0, 2)),
+            player: action.length <= 2 && this.state.displayQueue.length <= 1
+              ? this.state.state.opponent
+              : this.state.state.player,
+            opponent: action.length <= 2 && this.state.displayQueue.length <= 1
+              ? this.state.state.player
+              : this.state.state.opponent
+          },
+          displayQueue: [
+            ...action.length > 2
+              ? [action.slice(1)]
+              : [],
+            ...this.state.displayQueue.slice(1)
+          ],
+          error: [],
+          selectedChecker: []
+        })
+      }
     }
-    setTimeout(() => this.regularActions(), config.pauseTime)
   }
 
   aiMoves () {
@@ -166,13 +171,8 @@ class App extends React.Component {
         ).action
       }
       log(player, action)
-      this.setState({
-        state: checkers.result(
-          this.state.state,
-          action),
-        message: '',
-        selectedChecker: []
-      })
+      this.setState({ displayQueue: [action] })
+      setTimeout(() => this.regularActions(), config.pauseTime)
     }
     if (this.state.ai.p && this.state.state.player === 'p') {
       move('p')

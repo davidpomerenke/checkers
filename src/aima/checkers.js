@@ -52,7 +52,7 @@ const jump = (state, [y, x, royal], direction, prev = []) =>
       ],
       ...directions(crowned(state, [y, x, royal], direction, 2))
         .flatMap(direction2 => jump(
-          prev.length === 1 ? state : checkers._result(state, prev),
+          prev.length === 1 ? state : recursiveResult(state, prev),
           endPointRoyal(state, [y, x, royal], direction, 2),
           direction2,
           [...prev, [y, x, royal]]
