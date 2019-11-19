@@ -1,6 +1,7 @@
 # Checkers
 
 [![NPM version](https://img.shields.io/npm/v/aima-checkers.svg)](https://www.npmjs.com/package/aima-checkers)
+[![Gitter](https://badges.gitter.im/aima-checkers/community.svg)](https://gitter.im/aima-checkers/community)
 
 ## Rules
 
