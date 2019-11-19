@@ -24,7 +24,7 @@ const log = (player, action) =>
     action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 class App extends React.Component {
-  constructor() {
+  constructor () {
     super()
     // initialize game state and ui configuration
     this.state = {

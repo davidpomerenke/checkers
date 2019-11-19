@@ -104,7 +104,7 @@ body {
   left: -50%;
 }
 
-.subtitles div {
+.subtitles div div {
   display: inline-block;
   margin-left: 1vmin;
   margin-right: 1vmin;
@@ -147,7 +147,6 @@ body {
   overflow-y: scroll;
   margin: 0px auto;
   width: calc(100vmin + 2px);
-  height: 100vh;
   background-color: rgba(30, 30, 30, 0.7);
 }
 

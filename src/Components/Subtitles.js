@@ -107,11 +107,13 @@ class WelcomeMessage extends React.Component {
 export class CongratulationMessage extends React.Component {
   render () {
     return (
-      <p>
-        {checkers.heuristic(this.props.state) > 0 ? 'Brown' : 'Beige'} wins.
-        Congratulations! <br />
-        Reload to play again.
-      </p>
+      <div>
+        <p>
+          {checkers.heuristic(this.props.state) > 0 ? 'Brown' : 'Beige'} wins.
+          Congratulations! <br />
+          Reload to play again.
+        </p>
+      </div>
     )
   }
 }
