@@ -10,47 +10,40 @@ export default class Subtitles extends React.Component {
   }
 
   render () {
+    const welcomeCallback = (pq, type) => type === 'help'
+      ? this.setState({ help: true })
+      : this.props.parentCallback({ ai: [pq, type] })
+    const helpCallback = action => action === 'hide'
+      ? this.setState({ help: false })
+      : this.props.parentCallback({ highlights: !this.props.highlights })
+
     return (
       <div className={'subtitles' + (!this.state.help ? ' marginal' : '')}>
         {this.state.help && (
           <HelpMessage
             highlights={this.props.highlights}
             limits={this.props.limits}
-            parentCallback={action =>
-              action === 'hide'
-                ? this.setState({ help: false })
-                : this.props.parentCallback({ highlights: !this.props.highlights })}
-          />
-        )}
+            parentCallback={action => helpCallback(action)}
+          />)}
         {this.props.error.length > 0 && !this.state.help && (
           <ErrorMessage
             error={this.props.error}
             parentCallback={type => this.setState({ help: true })}
-          />
-        )}
+          />)}
         {this.props.ai.p === undefined && !this.state.help && (
           <WelcomeMessage
             p='p'
-            parentCallback={type =>
-              type === 'help'
-                ? this.setState({ help: true })
-                : this.props.parentCallback({ ai: ['p', type] })}
+            parentCallback={type => welcomeCallback('p', type)}
             error={this.props.error}
-          />
-        )}
+          />)}
         {this.props.ai.p !== undefined && this.props.ai.q === undefined && !this.state.help && (
           <WelcomeMessage
             p='q'
-            parentCallback={type =>
-              type === 'help'
-                ? this.setState({ help: true })
-                : this.props.parentCallback({ ai: ['q', type] })}
+            parentCallback={type => welcomeCallback('q', type)}
             error={this.props.error}
-          />
-        )}
+          />)}
         {checkers.terminalTest(this.props.state) && (
-          <CongratulationMessage state={this.props.state} />
-        )}
+          <CongratulationMessage state={this.props.state} />)}
       </div>
     )
   }
@@ -72,8 +65,7 @@ class WelcomeMessage extends React.Component {
                 Read the rules.
               </span>
             </div>
-          </div>
-        )}
+          </div>)}
         <div>
           <p>
             Select an AI for the brown side:

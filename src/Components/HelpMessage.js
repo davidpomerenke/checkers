@@ -27,7 +27,7 @@ export default class HelpMessage extends React.Component {
           </div>
           <div>
             <p>
-              You can choose an AI for each player. The Random Moves AI will perform random, valid moves. The other AIs presume are perfect and presume that you are perfect. The Dumb AI anticipates {this.props.limits.dumb} rounds, the Intermediate AI {this.props.limits.intermediate} rounds, and the Smart AI {this.props.limits.smart} rounds.
+              You can choose an AI for each player. The Random Moves AI will perform random, valid moves. The other AIs presume are perfect and presume that you are perfect. The Dumb AI anticipates {number[this.props.limits.dumb]} rounds, the Intermediate AI {number[this.props.limits.intermediate]} rounds, and the Smart AI {number[this.props.limits.smart]} rounds.
             </p>
           </div>
           <div>
@@ -50,3 +50,5 @@ export default class HelpMessage extends React.Component {
     )
   }
 }
+
+const number = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six' }
