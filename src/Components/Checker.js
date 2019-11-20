@@ -3,11 +3,15 @@ import React from 'react'
 export default class Checker extends React.Component {
   constructor () {
     super()
-    this.state = { transform: 'translate3d(0, 0, 0)' }
+    this.state = { 
+      transform: 'translate3d(0, 0, 0)',
+      opacity: '1'
+    }
   }
 
-  checkerStyle (y, x, animation) {
-    if (animation) setTimeout(() => this.animation([y, x], animation), 10)
+  checkerStyle (y, x, animation, casualty) {
+    if (animation) setTimeout(() => this.animation([y, x], animation), 0)
+    if (casualty) setTimeout(() => this.casualty(), 0)
     return {
       top: 'calc(50vh - 50vmin + 1.25vmin + ' + 12.5 * (7 - y) + 'vmin)',
       left: 'calc(50vw - 50vmin + 1.25vmin + ' + 12.5 * x + 'vmin)',
@@ -24,6 +28,10 @@ export default class Checker extends React.Component {
     })
   }
 
+  casualty () {
+    this.setState({ opacity: 0 })
+  }
+
   render () {
     return (
       <div
@@ -37,7 +45,7 @@ export default class Checker extends React.Component {
         }
         style={
           ({
-            ...this.checkerStyle(this.props.y, this.props.x, this.props.animation),
+            ...this.checkerStyle(this.props.y, this.props.x, this.props.animation, this.props.casualty),
             ...this.state
           })
         }

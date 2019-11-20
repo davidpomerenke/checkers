@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import { checkers, eq } from './aima/checkers'
+import { checkers, eq, casualty } from './aima/checkers'
 import { minimaxDecision, maximinDecision } from './aima/minimax'
 import { alphaBetaSearch, betaAlphaSearch } from './aima/alphabeta'
 import Board from './Components/Board'
@@ -15,13 +15,9 @@ const config = {
     smart: 3
   },
   pauseTime: 700 /* ms */,
-  highlightsDefault: true
+  animationTime: 300 /* ms */,
+  highlights: true
 }
-
-const log = (player, action) =>
-  console.log(
-    (player === 'p' ? 'brown: ' : 'beige: ') +
-    action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 class App extends React.Component {
   constructor () {
@@ -29,15 +25,17 @@ class App extends React.Component {
     // initialize game state and ui configuration
     this.state = {
       state: checkers.initialState, // game state (cf. `checkers.js`)
-      selectedChecker: [], // highlighted checker piece coordinates
+      oldState: checkers.initialState, // previous game state, for animations
+      selectedChecker: [], // coordinates of the selected checker piece
       ai: { // whether the players are played by an ai and if so which one
         p: undefined,
         q: undefined
       },
       error: [], // user interaction errors to be shown as subtitles
-      highlights: config.highlightsDefault, // whether possible actions are highlighted
+      highlights: config.highlights, // whether possible actions are highlighted
       displayQueue: [], // contains action parts which still have to be displayed
-      animation: [] // checker move to be animated
+      animation: [],
+      casualty: false
     }
     // note that react state variables are accessed via `this.state` in general,
     // so the game state is accessed via `this.state.state`
@@ -48,11 +46,11 @@ class App extends React.Component {
       <div className='app'>
         <Board
           highlightedSquares={
-            checkers.actions(this.state.state)
+            checkers.actions(this.state.state) // TODO:
               .filter(action => eq(action[0], this.state.selectedChecker))
               .map(action => action[action.length - 1])
           }
-          showHighlight={this.state.highlights}
+          highlights={this.state.highlights}
           parentCallback={(y, x, validMove) => this.moveResult(y, x, validMove)}
         />
         {['p', 'q'].map(player =>
@@ -61,13 +59,16 @@ class App extends React.Component {
             player={player}
             pieces={this.state.state[player]}
             selectedChecker={this.state.selectedChecker}
-            highlightedCheckers={
-              this.state.highlights && this.state.state.player === player && !this.state.ai[this.state.state.player]
+            highlightedCheckers={// TODO:
+              this.state.highlights &&
+              this.state.state.player === player &&
+              !this.state.ai[this.state.state.player]
                 ? checkers.actions(this.state.state).map(action => action[0])
                 : []
             }
             parentCallback={(y, x) => this.highlightResult(y, x, player)}
             animation={this.state.animation}
+            casualty={this.state.casualty}
           />
         )}
         <Subtitles
@@ -75,12 +76,7 @@ class App extends React.Component {
             if ('highlights' in arg) {
               this.setState({ highlights: arg.highlights })
             } else if ('ai' in arg) {
-              this.setState({
-                ai: {
-                  ...this.state.ai,
-                  [arg.ai[0]]: arg.ai[1]
-                }
-              })
+              this.setState({ ai: { ...this.state.ai, [arg.ai[0]]: arg.ai[1] } })
               setTimeout(() => this.aiMoves(), 0)
             }
           }}
@@ -136,57 +132,52 @@ class App extends React.Component {
   }
 
   move () {
-    if (!checkers.terminalTest(this.state.state)) {
-      if (this.state.displayQueue.length > 0) {
-        const action = this.state.displayQueue[0]
-        if (this.state.displayQueue.length > 1 || action.length > 2) {
-          setTimeout(() => this.move(), config.pauseTime)
-        } else {
-          setTimeout(() => this.aiMoves(), config.pauseTime)
-        }
-        log(this.state.state.player, action)
-        this.setState({
-          state: {
-            ...checkers.result(this.state.state, action.slice(0, 2)),
-            player: action.length <= 2 && this.state.displayQueue.length <= 1
-              ? this.state.state.opponent
-              : this.state.state.player,
-            opponent: action.length <= 2 && this.state.displayQueue.length <= 1
-              ? this.state.state.player
-              : this.state.state.opponent
-          },
-          displayQueue: [
-            ...action.length > 2
-              ? [action.slice(1)]
-              : [],
-            ...this.state.displayQueue.slice(1)
-          ],
-          error: [],
-          selectedChecker: [],
-          animation: action.slice(0, 2)
-        })
+    if (!checkers.terminalTest(this.state.state) && this.state.displayQueue.length > 0) {
+      const action = this.state.displayQueue[0]
+      if (this.state.displayQueue.length > 1 || action.length > 2) {
+        setTimeout(() => this.move(), config.pauseTime + config.animationTime)
+      } else {
+        setTimeout(() => this.aiMoves(), config.pauseTime + config.animationTime)
       }
+      log(this.state.state.player, action)
+      this.setState({
+        state: {
+          ...checkers.result(this.state.state, action.slice(0, 2)),
+          player: action.length <= 2 && this.state.displayQueue.length <= 1
+            ? this.state.state.opponent
+            : this.state.state.player,
+          opponent: action.length <= 2 && this.state.displayQueue.length <= 1
+            ? this.state.state.player
+            : this.state.state.opponent
+        },
+        displayQueue: [
+          ...action.length > 2 ? [action.slice(1)] : [],
+          ...this.state.displayQueue.slice(1)
+        ],
+        error: [],
+        selectedChecker: [],
+        animation: action.slice(0, 2),
+        casualty: this.state.state[this.state.state.opponent].find(checker =>
+          casualty(checker, action.slice(0, 2)))
+      })
     }
   }
 
   aiMoves () {
-    const pSearch = config.pruning ? alphaBetaSearch : minimaxDecision
-    const qSearch = config.pruning ? betaAlphaSearch : maximinDecision
-    const search = player => player === 'p' ? pSearch : qSearch
+    const search = {
+      p: config.pruning ? alphaBetaSearch : minimaxDecision,
+      q: config.pruning ? betaAlphaSearch : maximinDecision
+    }
+    const randAction = actions => actions[Math.floor(Math.random() * actions.length)]
     const move = player => {
-      let action
-      if (this.state.ai[player] === 'random') {
-        // random move
-        const randAction = actions => actions[Math.floor(Math.random() * actions.length)]
-        action = randAction(checkers.actions(this.state.state))
-      } else {
-        // minimax move
-        action = search(player)(
-          checkers, this.state.state, config.limits[this.state.ai[player]]
-        ).action
-      }
-      this.setState({ displayQueue: [action] })
-      setTimeout(() => this.move(), config.pauseTime)
+      this.setState({
+        displayQueue: [this.state.ai[player] === 'random'
+          // random move
+          ? randAction(checkers.actions(this.state.state))
+          // minimax / maximin move
+          : search[player](checkers, this.state.state, config.limits[this.state.ai[player]]).action]
+      })
+      setTimeout(() => this.move(), config.pauseTime + config.animationTime)
     }
     if (this.state.ai.p && this.state.state.player === 'p') {
       move('p')
@@ -195,5 +186,10 @@ class App extends React.Component {
     }
   }
 }
+
+const log = (player, action) =>
+  console.log(
+    (player === 'p' ? 'brown: ' : 'beige: ') +
+    action.map(([y, x]) => y + ', ' + x).join(' -> '))
 
 export default App
