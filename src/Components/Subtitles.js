@@ -1,5 +1,5 @@
 import React from 'react'
-import { checkers } from '../aima/checkers'
+import { checkers } from 'aima-checkers'
 import HelpMessage from './HelpMessage'
 import ErrorMessage from './ErrorMessage'
 

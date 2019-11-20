@@ -1,6 +1,6 @@
 import React from 'react'
 import Checker from './Checker'
-import { eq } from '../aima/checkers'
+import { eq } from 'aima-checkers'
 
 export default class CheckersGroup extends React.Component {
   render () {

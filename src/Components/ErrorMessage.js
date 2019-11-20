@@ -1,5 +1,5 @@
 import React from 'react'
-import { checkers, eq, dist, playerDirection } from '../aima/checkers'
+import { checkers, eq, dist, playerDirection } from 'aima-checkers'
 
 export default class ErrorMessage extends React.Component {
   message (type, state, y, x, player) {
