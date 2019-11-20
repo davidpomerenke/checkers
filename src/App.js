@@ -36,7 +36,8 @@ class App extends React.Component {
       },
       error: [], // user interaction errors to be shown as subtitles
       highlights: config.highlightsDefault, // whether possible actions are highlighted
-      displayQueue: [] // contains action parts which still have to be displayed
+      displayQueue: [], // contains action parts which still have to be displayed
+      animation: [] // checker move to be animated
     }
     // note that react state variables are accessed via `this.state` in general,
     // so the game state is accessed via `this.state.state`
@@ -66,6 +67,7 @@ class App extends React.Component {
                 : []
             }
             parentCallback={(y, x) => this.highlightResult(y, x, player)}
+            animation={this.state.animation}
           />
         )}
         <Subtitles
@@ -114,7 +116,7 @@ class App extends React.Component {
        * when there are several paths to one square, let the user choose, somehow
        * at the moment, the fist (arbitrary) move is chosen: `(...).filter(...)[0]`
        */
-      setTimeout(() => this.regularActions(), 0)
+      setTimeout(() => this.move(), 0)
     } else this.setState({ error: ['invalid move', this.state, y, x] })
   }
 
@@ -133,12 +135,12 @@ class App extends React.Component {
     }
   }
 
-  regularActions () {
+  move () {
     if (!checkers.terminalTest(this.state.state)) {
       if (this.state.displayQueue.length > 0) {
         const action = this.state.displayQueue[0]
         if (this.state.displayQueue.length > 1 || action.length > 2) {
-          setTimeout(() => this.regularActions(), config.pauseTime)
+          setTimeout(() => this.move(), config.pauseTime)
         } else {
           setTimeout(() => this.aiMoves(), config.pauseTime)
         }
@@ -160,7 +162,8 @@ class App extends React.Component {
             ...this.state.displayQueue.slice(1)
           ],
           error: [],
-          selectedChecker: []
+          selectedChecker: [],
+          animation: action.slice(0, 2)
         })
       }
     }
@@ -183,7 +186,7 @@ class App extends React.Component {
         ).action
       }
       this.setState({ displayQueue: [action] })
-      setTimeout(() => this.regularActions(), config.pauseTime)
+      setTimeout(() => this.move(), config.pauseTime)
     }
     if (this.state.ai.p && this.state.state.player === 'p') {
       move('p')
