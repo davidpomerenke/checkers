@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/checkers/static/css/main.28ff6ac9.chunk.css",
-    "main.js": "/checkers/static/js/main.19a05dea.chunk.js",
-    "main.js.map": "/checkers/static/js/main.19a05dea.chunk.js.map",
+    "main.js": "/checkers/static/js/main.837dadd3.chunk.js",
+    "main.js.map": "/checkers/static/js/main.837dadd3.chunk.js.map",
     "runtime-main.js": "/checkers/static/js/runtime-main.e9a3601e.js",
     "runtime-main.js.map": "/checkers/static/js/runtime-main.e9a3601e.js.map",
-    "static/js/2.fac74044.chunk.js": "/checkers/static/js/2.fac74044.chunk.js",
-    "static/js/2.fac74044.chunk.js.map": "/checkers/static/js/2.fac74044.chunk.js.map",
+    "static/js/2.c912ecf4.chunk.js": "/checkers/static/js/2.c912ecf4.chunk.js",
+    "static/js/2.c912ecf4.chunk.js.map": "/checkers/static/js/2.c912ecf4.chunk.js.map",
     "index.html": "/checkers/index.html",
-    "precache-manifest.9edbdc8950e3c4d9d43df10715511765.js": "/checkers/precache-manifest.9edbdc8950e3c4d9d43df10715511765.js",
+    "precache-manifest.60da2108b62938ae6fe5c8862d96a514.js": "/checkers/precache-manifest.60da2108b62938ae6fe5c8862d96a514.js",
     "service-worker.js": "/checkers/service-worker.js",
     "static/css/main.28ff6ac9.chunk.css.map": "/checkers/static/css/main.28ff6ac9.chunk.css.map"
   },
   "entrypoints": [
     "static/js/runtime-main.e9a3601e.js",
-    "static/js/2.fac74044.chunk.js",
+    "static/js/2.c912ecf4.chunk.js",
     "static/css/main.28ff6ac9.chunk.css",
-    "static/js/main.19a05dea.chunk.js"
+    "static/js/main.837dadd3.chunk.js"
   ]
 }
