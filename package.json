@@ -3,7 +3,7 @@
   "version": "0.1.3",
   "author": "David Pomerenke",
   "description": "Implementation of Russell & Norvig, \"Artificial Intelligence - A Modern Approach\". ",
-  "homepage": "https://davidpomerenke.github.io/checkers",
+  "homepage": "https://checkers.js.org",
   "repository": {
     "url": "https://github.com/davidpomerenke/checkers"
   },
