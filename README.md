@@ -18,10 +18,10 @@ The configuration can be changed at the top of [`App.js`](https://github.com/dav
 
 Key | Type | Meaning
 --- | --- |:---
-**pruning** | boolean | `false` (default): AIs use Minimax/Maximin without pruning. This is practically faster, probably due to parallelization benefits from the functional style. `false`: AIs use Alpha-Beta search, which is approximately more efficient.
-**limits**: dumb, intermediate, smart | integer | Depth limit for each of the AIs, that is the number of rounds they try to predict/optimize. < 5 recommended for good performance. 1, 3, 4 by default. 
-**highlights** | boolean | `true` (default): Show green highlights of movable checkers and possible moves by default. `false` Hide them by default. The user can change this in the rule section anyways. 
-**pauseTime** | integer *ms* | Minimum pause time before AI move steps. The AI calculations may take longer anyways. 
+**pruning** | boolean | `false` (default): AIs use Minimax/Maximin without pruning. This is practically faster, probably due to parallelization benefits from the functional style. <br /> `false`: AIs use Alpha-Beta search, which is approximately more efficient.
+**limits**: dumb, intermediate, smart | integer | Depth limit for each of the AIs, that is the number of rounds they try to predict/optimize. <br /> < 5 recommended for good performance. <br /> 1, 3, 4 by default. 
+**highlights** | boolean | `true` (default): Show green highlights of movable checkers and possible moves by default. <br /> `false` Hide them by default. The user can change this in the rule section anyways. 
+**pauseTime** | integer | Minimum pause time in *ms* before AI move steps. The AI calculations may take longer anyways. 
 
 ## Bugs
 
