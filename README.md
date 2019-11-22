@@ -1,6 +1,6 @@
 # Checkers
 
-[![NPM version](https://img.shields.io/npm/v/aima-checkers.svg)](https://www.npmjs.com/package/aima-checkers)
+[![NPM version](https://img.shields.io/npm/v/aima-checkers-gui.svg)](https://www.npmjs.com/package/aima-checkers-gui)
 ![](https://github.com/davidpomerenke/checkers/workflows/Node%20CI/badge.svg)
 [![Gitter](https://badges.gitter.im/aima-checkers/community.svg)](https://gitter.im/aima-checkers/community)
 
