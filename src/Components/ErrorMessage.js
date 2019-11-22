@@ -1,5 +1,5 @@
 import React from 'react'
-import { checkers, eq, dist, playerDirection } from 'aima-checkers'
+import { checkers, eq, dist, direction } from 'aima-checkers'
 
 export default class ErrorMessage extends React.Component {
   message (type, state, y, x, player) {
@@ -10,7 +10,7 @@ export default class ErrorMessage extends React.Component {
         message = 'Please select the checker you want to move.'
       } else if ((y + x) % 2 === 1) {
         message = 'You can only move diagonally – that is, to another black square.'
-      } else if ((y - state.selectedChecker[0]) * playerDirection(state.state) <= 0) {
+      } else if ((y - state.selectedChecker[0]) * direction(state.state.player) <= 0) {
         message = 'You can only move forward (unless you are royal).'
       } else if (
         checkers.actions(state.state).some(action =>

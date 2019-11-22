@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import { checkers, eq } from 'aima-checkers'
+import { checkers, eq, boardString } from 'aima-checkers'
 import { minimaxDecision, maximinDecision, alphaBetaSearch, betaAlphaSearch } from 'aima'
 import Board from './Components/Board'
 import CheckersGroup from './Components/CheckersGroup'
@@ -10,8 +10,8 @@ const config = {
   pruning: false,
   limits: {
     dumb: 1,
-    intermediate: 2,
-    smart: 3
+    intermediate: 3,
+    smart: 4
   },
   highlights: true,
   pauseTime: 700 /* ms */
@@ -127,7 +127,7 @@ class App extends React.Component {
       } else {
         setTimeout(() => this.aiMoves(), config.pauseTime)
       }
-      log(this.state.state.player, action)
+      console.log(moveString(this.state.state.player, action))
       this.setState({
         state: {
           ...checkers.result(this.state.state, action.slice(0, 2)),
@@ -145,6 +145,7 @@ class App extends React.Component {
         error: [],
         selectedChecker: []
       })
+      console.log(boardString(this.state.state))
     }
   }
 
@@ -172,9 +173,8 @@ class App extends React.Component {
   }
 }
 
-const log = (player, action) =>
-  console.log(
-    (player === 'p' ? 'brown: ' : 'beige: ') +
-    action.map(([y, x]) => y + ', ' + x).join(' -> '))
+const moveString = (player, action) =>
+  (player === 'p' ? 'brown: ' : 'beige: ') +
+  action.map(([y, x]) => y + ', ' + x).join(' -> ')
 
 export default App
