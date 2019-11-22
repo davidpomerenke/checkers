@@ -1,6 +1,6 @@
 {
   "name": "aima-checkers-gui",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "David Pomerenke",
   "description": "Implementation of Russell & Norvig, \"Artificial Intelligence - A Modern Approach\". ",
   "homepage": "https://checkers.js.org",
