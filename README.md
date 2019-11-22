@@ -10,7 +10,17 @@
 
 You can simply play this in the browser: [davidpomerenke.github.io/checkers](https://davidpomerenke.github.io/checkers)
 
-For development, clone the repository and `npm start`.
+For development, clone the repository and `npm start`. 
+
+## Configuration
+
+The configuration can be changed at the top of [`App.js`](https://github.com/davidpomerenke/checkers/blob/master/src/App.js). 
+
+--- | --- |:---
+**pruning** | boolean | `false` (default): AIs use Minimax/Maximin without pruning. This is practically faster, probably due to parallelization benefits from the functional style. `false`: AIs use Alpha-Beta search, which is approximately more efficient.
+**limits**: dumb, intermediate, smart | integer | Depth limit for each of the AIs, that is the number of rounds they try to predict/optimize. < 5 recommended for good performance. 1, 3, 4 by default. 
+**highlights** | boolean | `true` (default): Show green highlights of movable checkers and possible moves by default. `false` Hide them by default. The user can change this in the rule section anyways. 
+**pauseTime** | integer *ms* | Minimum pause time before AI move steps. The AI calculations may take longer anyways. 
 
 ## Bugs
 
@@ -28,17 +38,17 @@ The checkers game is completely divided into three parts:
 
 ## Structure
 
-### Display Components
+### Display components
 
-The display components are grouped into the board and the checkers: The [Board](https://github.com/davidpomerenke/checkers/blob/master/src/Components/Board.js) class consists of 64 [Squares](https://github.com/davidpomerenke/checkers/blob/master/src/Components/Square.js), which receive their board coordinates, as well as information about which squares are highlighted, and then choose their colour accordingly as black, white or green (to indicate that a move to this square is possible). 
+The display components are grouped into the board and the checkers: The [`Board`](https://github.com/davidpomerenke/checkers/blob/master/src/Components/Board.js) class consists of 64 [`Squares`](https://github.com/davidpomerenke/checkers/blob/master/src/Components/Square.js), which receive their board coordinates, as well as information about which squares are highlighted, and then choose their colour accordingly as black, white or green (to indicate that a move to this square is possible). 
 
-The checkers are not connected to the squares as they change their position, which means that if they are animated they will float on top of the board. The checkers are grouped into two class instances of [CheckersGroup](https://github.com/davidpomerenke/checkers/blob/master/src/Components/CheckersGroup.js), one for each colour. Each CheckersGroup instance receives which of their checkers are highlighted, and they pass this on to the checkers. 
+The checkers are not connected to the squares as they change their position, which means that if they are animated they will float on top of the board. The [`Checker`](https://github.com/davidpomerenke/checkers/blob/master/src/Components/Checker.js) instances are grouped into two class instances of [`CheckersGroup`](https://github.com/davidpomerenke/checkers/blob/master/src/Components/CheckersGroup.js), one for each colour. Each `CheckersGroup` instance receives which of their checkers are highlighted, and they pass this on to the `Checker` instances. 
 
-Both squares and checkers have `parentCallback` methods which they use to communicate to the [App](https://github.com/davidpomerenke/checkers/blob/master/src/App.js) class when they are clicked. 
+Both squares and checkers have `parentCallback` methods which they use to communicate to the [`App`](https://github.com/davidpomerenke/checkers/blob/master/src/App.js) class when they are clicked. 
 
-### GUI Logics
+### GUI logics
 
-The [App](https://github.com/davidpomerenke/checkers/blob/master/src/App.js) class orchestrates the working together of the display components and the rules backend, as well as with the AI. 
+The [`App`](https://github.com/davidpomerenke/checkers/blob/master/src/App.js) class orchestrates the working together of the display components and the rules backend, as well as with the AI. 
 
 Its core component is the `this.state` object, which contains the game state `this.state.state` (in the [aima-checkers](https://github.com/davidpomerenke/aima-checkers) notation) as well as information about which checker has been selected by the user, which error message is currently displayed, and which settings have been chosen by the user (for the AI and the help highlights). 
 
@@ -47,3 +57,7 @@ When a checker is selected, the `highlight` method is called and updates the sta
 After each `move` and after each call of the `step` method, the `step` method is called. It edits the `this.state.displayQueue` by dissecting multi-step moves into a list of single-step moves and executing the next step of that list (using the `checkers.result` method from [aima-checkers](https://github.com/davidpomerenke/aima-checkers)). When the list is empty, it calls the `aiMove` method, where the AIs, if activated, make their own calls to the `move` method. 
 
 At any point during the game, the possible moves for the current player are received from the `checkers.actions` method from [aima-checkers](https://github.com/davidpomerenke/aima-checkers), and the end coordinates of the actions are passed to the board class for highlighting, if enabled. 
+
+### Error messages
+
+Error messages (for mistakes the user makes) are detected by the [`ErrorMessage`](https://github.com/davidpomerenke/checkers/blob/master/src/Components/ErrorMessage.js) class, which makes use of internal functions from [aima-checkers](https://github.com/davidpomerenke/aima-checkers) for this purpose.
