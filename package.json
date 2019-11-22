@@ -2,7 +2,7 @@
   "name": "aima-checkers-gui",
   "version": "0.1.5",
   "author": "David Pomerenke",
-  "description": "Implementation of Russell & Norvig, \"Artificial Intelligence - A Modern Approach\". ",
+  "description": "Checkers browser game,made with aima.js and React.",
   "homepage": "https://checkers.js.org",
   "repository": {
     "url": "https://github.com/davidpomerenke/checkers"
