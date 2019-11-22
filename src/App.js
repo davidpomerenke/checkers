@@ -23,7 +23,6 @@ class App extends React.Component {
     // initialize game state and ui configuration
     this.state = {
       state: checkers.initialState, // game state (cf. `checkers.js`)
-      oldState: checkers.initialState, // previous game state, for animations
       selectedChecker: [], // coordinates of the selected checker piece
       ai: { // whether the players are played by an ai and if so which one
         p: undefined,
@@ -47,7 +46,7 @@ class App extends React.Component {
               .map(action => action[action.length - 1])
           }
           highlights={this.state.highlights}
-          parentCallback={(y, x, validMove) => this.moveResult(y, x, validMove)}
+          parentCallback={(y, x, validMove) => this.move(y, x, validMove)}
         />
         {['p', 'q'].map(player =>
           <CheckersGroup
@@ -62,7 +61,7 @@ class App extends React.Component {
                 ? checkers.actions(this.state.state).map(action => action[0])
                 : []
             }
-            parentCallback={(y, x) => this.highlightResult(y, x, player)}
+            parentCallback={(y, x) => this.highlight(y, x, player)}
           />
         )}
         <Subtitles
@@ -71,7 +70,7 @@ class App extends React.Component {
               this.setState({ highlights: arg.highlights })
             } else if ('ai' in arg) {
               this.setState({ ai: { ...this.state.ai, [arg.ai[0]]: arg.ai[1] } })
-              setTimeout(() => this.aiMoves(), 0)
+              setTimeout(() => this.aiMove(), 0)
             }
           }}
           error={this.state.error}
@@ -84,7 +83,7 @@ class App extends React.Component {
     )
   }
 
-  moveResult (y, x, validMove) {
+  move (y, x, validMove) {
     if (validMove) {
       // when the user makes a manual move on one side, disable the ai for that side
       const ai = this.state.ai
@@ -101,11 +100,11 @@ class App extends React.Component {
           )[0]
         ]
       })
-      setTimeout(() => this.move(), 0)
+      setTimeout(() => this.step(), 0)
     } else this.setState({ error: ['invalid move', this.state, y, x] })
   }
 
-  highlightResult (y, x, player) {
+  highlight (y, x, player) {
     if (
       player === this.state.state.player &&
       checkers.actions(this.state.state).some(action => eq(action[0], [y, x]))
@@ -119,15 +118,15 @@ class App extends React.Component {
     }
   }
 
-  move () {
+  step () {
     if (!checkers.terminalTest(this.state.state) && this.state.displayQueue.length > 0) {
       const action = this.state.displayQueue[0]
       if (this.state.displayQueue.length > 1 || action.length > 2) {
-        setTimeout(() => this.move(), config.pauseTime)
+        setTimeout(() => this.step(), config.pauseTime)
       } else {
-        setTimeout(() => this.aiMoves(), config.pauseTime)
+        setTimeout(() => this.aiMove(), config.pauseTime)
       }
-      console.log(moveString(this.state.state.player, action))
+      console.log(moveToString(this.state.state.player, action))
       this.setState({
         state: {
           ...checkers.result(this.state.state, action.slice(0, 2)),
@@ -149,7 +148,7 @@ class App extends React.Component {
     }
   }
 
-  aiMoves () {
+  aiMove () {
     const search = {
       p: config.pruning ? alphaBetaSearch : minimaxDecision,
       q: config.pruning ? betaAlphaSearch : maximinDecision
@@ -163,7 +162,7 @@ class App extends React.Component {
           // minimax / maximin move
           : search[player](checkers, this.state.state, config.limits[this.state.ai[player]]).action]
       })
-      setTimeout(() => this.move(), config.pauseTime + config.animationTime)
+      setTimeout(() => this.step(), config.pauseTime + config.animationTime)
     }
     if (this.state.ai.p && this.state.state.player === 'p') {
       move('p')
@@ -173,7 +172,7 @@ class App extends React.Component {
   }
 }
 
-const moveString = (player, action) =>
+const moveToString = (player, action) =>
   (player === 'p' ? 'brown: ' : 'beige: ') +
   action.map(([y, x]) => y + ', ' + x).join(' -> ')
 
