@@ -17,14 +17,14 @@
     "Artificial Intelligence"
   ],
   "dependencies": {
-    "aima": "^0.3.0",
-    "aima-checkers": "^0.1.11",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0"
+    "aima": "^0.6.6",
+    "aima-checkers": "^0.1.13",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.3.1"
   },
   "devDependencies": {
-    "gh-pages": "^2.1.1"
+    "gh-pages": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
